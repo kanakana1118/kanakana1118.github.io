@@ -330,25 +330,12 @@
     next.addEventListener("click", goNext);
     prev.addEventListener("click", goPrev);
 
-    // 本の上を横になぞると、ページがめくれる（右から左へ＝次、左から右へ＝前）
-    var startX = null;
-    var startY = null;
-    book.addEventListener("pointerdown", function (event) {
-      startX = event.clientX;
-      startY = event.clientY;
-    });
-    book.addEventListener("pointerup", function (event) {
-      if (startX === null) return;
-      var dx = event.clientX - startX;
-      var dy = event.clientY - startY;
-      startX = null;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-        if (dx < 0) goNext();
-        else goPrev();
-      }
-    });
-    book.addEventListener("pointercancel", function () {
-      startX = null;
+    // 本をタップ（クリック）すると、ページがめくれる（右のページ＝次、左のページ＝前）
+    book.addEventListener("click", function (event) {
+      if (event.target.closest("a, button")) return;
+      var rect = book.getBoundingClientRect();
+      if (event.clientX >= rect.left + rect.width / 2) goNext();
+      else goPrev();
     });
 
     controls.hidden = false;

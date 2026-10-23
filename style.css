@@ -954,6 +954,11 @@ body[data-page="top"] .to-top {
   border-top: 1px solid var(--border);
 }
 
+/* JSが組み立てた本は、タップ（クリック）でめくれる */
+.novel-stage .book {
+  cursor: pointer;
+}
+
 /* 本の色・質感。青みがかった濃い茶色の表紙と、わずかに青みのある薄灰色の紙 */
 .book {
   --book-cover: #35281f;
@@ -966,7 +971,7 @@ body[data-page="top"] .to-top {
   --tilt: 14deg; /* 見上げる角度。大きいほど、下側の厚みが見える */
   --book-depth: 28px; /* ページの束の厚み */
   --book-flip: 0.9s;
-  touch-action: pan-y; /* 横のなぞりはページめくりに使い、縦のスクロールはそのまま使える */
+  touch-action: manipulation; /* タップですぐ反応させる（ダブルタップの拡大待ちをしない） */
   /* 布の織り目と紙の粒（インラインSVG。外部ファイルは使わない） */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   position: relative;
