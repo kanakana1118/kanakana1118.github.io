@@ -375,6 +375,7 @@ body[data-page="top"] .to-top {
   display: none;
 }
 
+
 .stage {
   position: relative;
   max-width: none;
@@ -1375,6 +1376,22 @@ footer {
   padding: 24px;
   text-align: center;
   color: var(--muted);
+}
+
+/* Top: コピーライトは、メニュー画面の下端に重ねる（PC ではイラストの下端、スマホでは画面の下端） */
+.stage > footer {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 16px 24px;
+  color: var(--text);
+  text-shadow: 0 0 8px var(--bg-deep), 0 0 3px var(--bg-deep);
+}
+
+.stage.is-menu > footer {
+  display: block;
 }
 
 /* ===== スマホ ===== */

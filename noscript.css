@@ -20,6 +20,11 @@
   visibility: visible;
 }
 
+/* Top: メニューが直接見えるので、コピーライトも出す */
+.stage > footer {
+  display: block;
+}
+
 /* Develop: 中身を隠している覆いを外す */
 .dev-shot::after,
 .dev-text::after {
