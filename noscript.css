@@ -1,10 +1,27 @@
-/* JSが使えないときは、イントロを飛ばしてメニューを直接見せる（Top用） */
+/* JSが使えないときの見え方 */
+
+/* Top: イントロを飛ばして、メニューを直接見せる */
+.stage:not(.is-menu) {
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+}
+
 .intro,
 .blackout {
   display: none;
 }
 
 .menu {
+  position: relative;
+  inset: auto;
   opacity: 1;
   visibility: visible;
+}
+
+/* Develop: 中身を隠している覆いを外す */
+.dev-shot::after,
+.dev-text::after {
+  display: none;
 }

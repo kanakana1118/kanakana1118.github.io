@@ -13,25 +13,34 @@
   <main class="stage">
     <section class="intro" aria-label="オープニング">
       <video src="videos/timelapse.mp4" muted autoplay playsinline preload="auto" aria-label="タイムラプス動画"></video>
-      <button class="skip" type="button">スキップ</button>
     </section>
 
     <div class="blackout" aria-hidden="true"></div>
 
     <div class="menu">
       <div class="menu-art">
-        <img src="images/top/top.webp" width="1200" height="1600" alt="青い髪の人物が、光る手を差し出しているイラスト">
+        <img
+          src="images/top/top-1280.webp"
+          srcset="images/top/top-1280.webp 1280w, images/top/top-1920.webp 1920w"
+          sizes="100vw"
+          width="1920" height="2560"
+          alt="青い髪の人物が、光る手を差し出しているイラスト">
       </div>
 
-      <nav class="orbs" aria-label="メニュー">
-        <a class="orb orb--about" href="about/index.html"><span>About</span></a>
-        <a class="orb orb--illust" href="illust/index.html"><span>Illust</span></a>
-        <a class="orb orb--novel" href="novel/index.html"><span>Novel</span></a>
-        <a class="orb orb--dev" href="dev/index.html"><span>Dev</span></a>
-        <a class="orb orb--crossover" href="crossover/index.html"><span>Crossover</span></a>
-      </nav>
+      <div class="menu-shade" aria-hidden="true"></div>
 
-      <h1 class="menu-name">叶奏</h1>
+      <div class="menu-ui">
+        <nav class="orbs" aria-label="メニュー">
+          <a class="orb orb--about" href="about/index.html"><span>About</span></a>
+          <a class="orb orb--illust" href="illust/index.html"><span>Illust</span></a>
+          <a class="orb orb--novel" href="novel/index.html"><span>Novel</span></a>
+          <a class="orb orb--develop" href="dev/index.html"><span>Develop</span></a>
+          <a class="orb orb--crossover" href="crossover/index.html"><span>Crossover</span></a>
+        </nav>
+
+        <h1 class="menu-name">叶奏</h1>
+        <p class="menu-lead">【仮】イラストを描き、小説を書き、ものづくりをしています。創作と開発を行き来しながら、作ったものを置いていく場所です。</p>
+      </div>
     </div>
   </main>
 </body>

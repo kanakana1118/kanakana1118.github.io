@@ -13,11 +13,11 @@
     <a class="site-title" href="../index.html">叶奏</a>
     <nav>
       <a href="../index.html">Top</a>
+      <a href="../about/index.html">About</a>
       <a href="../illust/index.html">Illust</a>
       <a href="../novel/index.html" aria-current="page">Novel</a>
-      <a href="../dev/index.html">Dev</a>
+      <a href="../dev/index.html">Develop</a>
       <a href="../crossover/index.html">Crossover</a>
-      <a href="../about/index.html">About</a>
     </nav>
   </header>
 
@@ -25,19 +25,26 @@
     <h1>Novel</h1>
     <p class="lead">書いている小説です。読める場所へのリンクを載せています。</p>
 
+    <!-- 作品を足すときは、<article class="novel"> を1つコピーして書き換える。
+         JSが、すべての作品を1冊の本にまとめる（作品を切り替えるとページがめくれる） -->
     <div class="novel-viewer">
       <article class="novel">
         <div class="book">
-          <div class="book-body">
-            <div class="page-right"></div>
-            <div class="cover">
-              <div class="cover-front"><div class="placeholder">【仮】表紙</div></div>
-              <div class="cover-back"><p class="catch">【仮】キャッチコピー</p></div>
+          <div class="book-body is-open">
+            <div class="board"></div>
+            <div class="slab slab--left"></div>
+            <div class="slab"></div>
+            <div class="sheet sheet--static">
+              <div class="face face-right"><div class="page-lines"></div></div>
+            </div>
+            <div class="sheet cover">
+              <div class="face face-cover"><div class="placeholder">【仮】表紙</div></div>
+              <div class="face face-left"><div class="endpaper"><p class="catch">【仮】キャッチコピー 1</p></div></div>
             </div>
           </div>
         </div>
         <div class="novel-info">
-          <h2 class="novel-title">「【仮】タイトル」</h2>
+          <h2 class="novel-title">「【仮】タイトル 1」</h2>
           <p class="novel-synopsis">【仮】あらすじ</p>
           <div class="buttons">
             <a class="button" href="#" target="_blank" rel="noopener">【仮】小説家になろう</a>
@@ -48,16 +55,46 @@
 
       <article class="novel">
         <div class="book">
-          <div class="book-body">
-            <div class="page-right"></div>
-            <div class="cover">
-              <div class="cover-front"><div class="placeholder">【仮】表紙</div></div>
-              <div class="cover-back"><p class="catch">【仮】キャッチコピー</p></div>
+          <div class="book-body is-open">
+            <div class="board"></div>
+            <div class="slab slab--left"></div>
+            <div class="slab"></div>
+            <div class="sheet sheet--static">
+              <div class="face face-right"><div class="page-lines"></div></div>
+            </div>
+            <div class="sheet cover">
+              <div class="face face-cover"><div class="placeholder">【仮】表紙</div></div>
+              <div class="face face-left"><div class="endpaper"><p class="catch">【仮】キャッチコピー 2</p></div></div>
             </div>
           </div>
         </div>
         <div class="novel-info">
-          <h2 class="novel-title">「【仮】タイトル」</h2>
+          <h2 class="novel-title">「【仮】タイトル 2」</h2>
+          <p class="novel-synopsis">【仮】あらすじ</p>
+          <div class="buttons">
+            <a class="button" href="#" target="_blank" rel="noopener">【仮】小説家になろう</a>
+            <a class="button" href="#" target="_blank" rel="noopener">【仮】カクヨム</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="novel">
+        <div class="book">
+          <div class="book-body is-open">
+            <div class="board"></div>
+            <div class="slab slab--left"></div>
+            <div class="slab"></div>
+            <div class="sheet sheet--static">
+              <div class="face face-right"><div class="page-lines"></div></div>
+            </div>
+            <div class="sheet cover">
+              <div class="face face-cover"><div class="placeholder">【仮】表紙</div></div>
+              <div class="face face-left"><div class="endpaper"><p class="catch">【仮】キャッチコピー 3</p></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="novel-info">
+          <h2 class="novel-title">「【仮】タイトル 3」</h2>
           <p class="novel-synopsis">【仮】あらすじ</p>
           <div class="buttons">
             <a class="button" href="#" target="_blank" rel="noopener">【仮】小説家になろう</a>
