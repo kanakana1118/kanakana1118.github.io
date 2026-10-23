@@ -313,19 +313,42 @@
       }, 1000);
     }
 
-    next.addEventListener("click", function () {
+    function goNext() {
       if (index >= n - 1) return;
       leaves[index].classList.add("is-flipped");
       turn(leaves[index]);
       index += 1;
       update();
-    });
-    prev.addEventListener("click", function () {
+    }
+    function goPrev() {
       if (index <= 0) return;
       index -= 1;
       leaves[index].classList.remove("is-flipped");
       turn(leaves[index]);
       update();
+    }
+    next.addEventListener("click", goNext);
+    prev.addEventListener("click", goPrev);
+
+    // 本の上を横になぞると、ページがめくれる（右から左へ＝次、左から右へ＝前）
+    var startX = null;
+    var startY = null;
+    book.addEventListener("pointerdown", function (event) {
+      startX = event.clientX;
+      startY = event.clientY;
+    });
+    book.addEventListener("pointerup", function (event) {
+      if (startX === null) return;
+      var dx = event.clientX - startX;
+      var dy = event.clientY - startY;
+      startX = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) goNext();
+        else goPrev();
+      }
+    });
+    book.addEventListener("pointercancel", function () {
+      startX = null;
     });
 
     controls.hidden = false;
