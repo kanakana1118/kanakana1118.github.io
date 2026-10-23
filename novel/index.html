@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Novel | 叶奏</title>
-  <meta name="description" content="叶奏の小説と、公募の選考歴。">
+  <meta name="description" content="叶奏の小説。">
   <link rel="stylesheet" href="../style.css">
   <script src="../script.js" defer></script>
 </head>
-<body>
+<body data-page="novel">
   <header class="site-header">
     <a class="site-title" href="../index.html">叶奏</a>
     <nav>
@@ -25,28 +25,57 @@
     <h1>Novel</h1>
     <p class="lead">書いている小説です。読める場所へのリンクを載せています。</p>
 
-    <section id="works">
-      <h2>作品</h2>
-      <div class="cards">
-        <article class="card">
-          <h3>【仮】作品タイトル</h3>
-          <p>【仮】一言あらすじ</p>
-          <a class="button" href="#" target="_blank" rel="noopener">【仮】読みに行く</a>
-        </article>
-        <article class="card">
-          <h3>【仮】作品タイトル</h3>
-          <p>【仮】一言あらすじ</p>
-          <a class="button" href="#" target="_blank" rel="noopener">【仮】読みに行く</a>
-        </article>
-      </div>
-    </section>
+    <div class="novel-viewer">
+      <article class="novel">
+        <div class="book">
+          <div class="book-body">
+            <div class="page-right"></div>
+            <div class="cover">
+              <div class="cover-front"><div class="placeholder">【仮】表紙</div></div>
+              <div class="cover-back"><p class="catch">【仮】キャッチコピー</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="novel-info">
+          <h2 class="novel-title">「【仮】タイトル」</h2>
+          <p class="novel-synopsis">【仮】あらすじ</p>
+          <div class="buttons">
+            <a class="button" href="#" target="_blank" rel="noopener">【仮】小説家になろう</a>
+            <a class="button" href="#" target="_blank" rel="noopener">【仮】カクヨム</a>
+          </div>
+        </div>
+      </article>
 
-    <section id="contests">
-      <h2>公募の選考歴</h2>
-      <ul class="list">
-        <li>【仮】開催年 / 賞の名前 / 結果（例: 一次選考通過）</li>
-      </ul>
-    </section>
+      <article class="novel">
+        <div class="book">
+          <div class="book-body">
+            <div class="page-right"></div>
+            <div class="cover">
+              <div class="cover-front"><div class="placeholder">【仮】表紙</div></div>
+              <div class="cover-back"><p class="catch">【仮】キャッチコピー</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="novel-info">
+          <h2 class="novel-title">「【仮】タイトル」</h2>
+          <p class="novel-synopsis">【仮】あらすじ</p>
+          <div class="buttons">
+            <a class="button" href="#" target="_blank" rel="noopener">【仮】小説家になろう</a>
+            <a class="button" href="#" target="_blank" rel="noopener">【仮】カクヨム</a>
+          </div>
+        </div>
+      </article>
+
+      <div class="novel-controls" hidden>
+        <button class="round-btn" type="button" data-prev aria-label="前の作品">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <span class="novel-count" aria-live="polite"></span>
+        <button class="round-btn" type="button" data-next aria-label="次の作品">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
   </main>
 
   <footer>

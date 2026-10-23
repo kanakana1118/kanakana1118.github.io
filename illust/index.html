@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../style.css">
   <script src="../script.js" defer></script>
 </head>
-<body>
+<body data-page="illust">
   <header class="site-header">
     <a class="site-title" href="../index.html">叶奏</a>
     <nav>
@@ -22,28 +22,50 @@
   </header>
 
   <main>
-    <h1>Illust</h1>
-    <p class="lead">厳選した一次創作を載せています。ほかの作品は外部サイトで見られます。</p>
-    <div class="buttons">
-      <a class="button" href="#" target="_blank" rel="noopener">【仮】pixivで全作品を見る</a>
-      <a class="button" href="#" target="_blank" rel="noopener">【仮】Instagramで全作品を見る</a>
+    <div class="page-head">
+      <h1>Illust</h1>
+      <div class="sns">
+        <a href="#" target="_blank" rel="noopener" aria-label="X（【仮】リンク先は未定）">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4l14 16M19 4L5 20"/></svg>
+        </a>
+        <a href="#" target="_blank" rel="noopener" aria-label="Instagram（【仮】リンク先は未定）">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.5"/><circle cx="16.8" cy="7.2" r="0.6"/></svg>
+        </a>
+        <a href="#" target="_blank" rel="noopener" aria-label="pixiv（【仮】リンク先は未定）">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20V5h5a4 4 0 010 8H8"/></svg>
+        </a>
+      </div>
     </div>
+    <p class="lead">厳選した一次創作を載せています。ほかの作品は、右上のアイコンのリンク先で見られます。</p>
 
-    <section id="original">
-      <h2>作品</h2>
-      <div class="gallery">
-        <article class="card">
+    <section class="carousel" aria-label="作品一覧">
+      <div class="carousel-track" tabindex="0">
+        <article class="card slide">
           <div class="placeholder">【仮】画像</div>
           <h3>【仮】作品タイトル</h3>
         </article>
-        <article class="card">
+        <article class="card slide">
           <div class="placeholder">【仮】画像</div>
           <h3>【仮】作品タイトル</h3>
         </article>
-        <article class="card">
+        <article class="card slide">
           <div class="placeholder">【仮】画像</div>
           <h3>【仮】作品タイトル</h3>
         </article>
+        <article class="card slide">
+          <div class="placeholder">【仮】画像</div>
+          <h3>【仮】作品タイトル</h3>
+        </article>
+      </div>
+
+      <div class="carousel-controls">
+        <button class="round-btn" type="button" data-prev aria-label="前の作品">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <div class="carousel-dots" aria-hidden="true"></div>
+        <button class="round-btn" type="button" data-next aria-label="次の作品">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
       </div>
     </section>
   </main>

@@ -6,60 +6,33 @@
   <title>叶奏 | Home</title>
   <meta name="description" content="叶奏の個人ホームページ。イラスト・小説・開発をまとめています。">
   <link rel="stylesheet" href="style.css">
+  <noscript><link rel="stylesheet" href="noscript.css"></noscript>
   <script src="script.js" defer></script>
 </head>
-<body>
-  <header class="site-header">
-    <a class="site-title" href="index.html">叶奏</a>
-    <nav>
-      <a href="index.html" aria-current="page">Top</a>
-      <a href="illust/index.html">Illust</a>
-      <a href="novel/index.html">Novel</a>
-      <a href="dev/index.html">Dev</a>
-      <a href="crossover/index.html">Crossover</a>
-      <a href="about/index.html">About</a>
-    </nav>
-  </header>
-
-  <main>
-    <figure class="hero">
-      <div class="placeholder">【仮】トップに置くイラスト</div>
-    </figure>
-
-    <div class="hero-text">
-      <h1>叶奏</h1>
-      <p class="lead">【仮】イラスト・小説・開発をしています。創作と開発を組み合わせて作っています。</p>
-    </div>
-
-    <section>
-      <h2>Menu</h2>
-      <div class="cards">
-        <article class="card">
-          <h3><a href="illust/index.html">Illust</a></h3>
-          <p>イラスト。厳選した一次創作を載せています。</p>
-        </article>
-        <article class="card">
-          <h3><a href="novel/index.html">Novel</a></h3>
-          <p>書いている小説と、公募の選考歴です。</p>
-        </article>
-        <article class="card">
-          <h3><a href="dev/index.html">Dev</a></h3>
-          <p>作ったホームページなどの概要です。</p>
-        </article>
-        <article class="card">
-          <h3><a href="crossover/index.html">Crossover</a></h3>
-          <p>創作と開発が組み合わさったものです。</p>
-        </article>
-        <article class="card">
-          <h3><a href="about/index.html">About</a></h3>
-          <p>プロフィール、SNS、参加したイベントです。</p>
-        </article>
-      </div>
+<body data-page="top">
+  <main class="stage">
+    <section class="intro" aria-label="オープニング">
+      <video src="videos/timelapse.mp4" muted autoplay playsinline preload="auto" aria-label="タイムラプス動画"></video>
+      <button class="skip" type="button">スキップ</button>
     </section>
-  </main>
 
-  <footer>
-    <small>&copy; 2026 叶奏</small>
-  </footer>
+    <div class="blackout" aria-hidden="true"></div>
+
+    <div class="menu">
+      <div class="menu-art">
+        <img src="images/top/top.webp" width="1200" height="1600" alt="青い髪の人物が、光る手を差し出しているイラスト">
+      </div>
+
+      <nav class="orbs" aria-label="メニュー">
+        <a class="orb orb--about" href="about/index.html"><span>About</span></a>
+        <a class="orb orb--illust" href="illust/index.html"><span>Illust</span></a>
+        <a class="orb orb--novel" href="novel/index.html"><span>Novel</span></a>
+        <a class="orb orb--dev" href="dev/index.html"><span>Dev</span></a>
+        <a class="orb orb--crossover" href="crossover/index.html"><span>Crossover</span></a>
+      </nav>
+
+      <h1 class="menu-name">叶奏</h1>
+    </div>
+  </main>
 </body>
 </html>

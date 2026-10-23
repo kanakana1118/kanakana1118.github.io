@@ -1,0 +1,10 @@
+/* JSが使えないときは、イントロを飛ばしてメニューを直接見せる（Top用） */
+.intro,
+.blackout {
+  display: none;
+}
+
+.menu {
+  opacity: 1;
+  visibility: visible;
+}

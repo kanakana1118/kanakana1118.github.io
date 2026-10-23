@@ -14,26 +14,48 @@
 }
 
 :root {
+  color-scheme: dark;
   --font-serif: "Kokoro", "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
-  --bg: #fafafa;
-  --text: #222;
-  --muted: #666;
-  --accent: #3b82f6;
-  --on-accent: #fff;
-  --card-bg: #fff;
-  --border: #e5e5e5;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* 黒基調。背景は真っ黒ではなく、わずかに青みのある黒 */
+  --bg: #0a0a11;
+  --bg-deep: #050508;
+  --bg-hatch: #12121b;
+  --text: #e8e6ee;
+  --muted: #8d8f9c;
+  --card-bg: #14141d;
+  --border: #25252f;
+  --on-accent: #0a0a11;
+
+  /* ナビの玉と、各ページの差し色 */
+  --c-red: #e5484d;
+  --c-orange: #f2994a;
+  --c-yellow: #e9c84a;
+  --c-green: #3ecf8e;
+  --c-blue: #4c8dff;
+
+  --accent: #c9c7d6;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14161a;
-    --text: #e8e8e8;
-    --muted: #9aa0a6;
-    --accent: #60a5fa;
-    --on-accent: #0b0d10;
-    --card-bg: #1e2127;
-    --border: #2c3036;
-  }
+[data-page="about"] {
+  --accent: var(--c-red);
+}
+
+[data-page="illust"] {
+  --accent: var(--c-orange);
+}
+
+[data-page="novel"] {
+  --accent: var(--c-yellow);
+}
+
+[data-page="dev"] {
+  --accent: var(--c-green);
+}
+
+[data-page="crossover"] {
+  --accent: var(--c-blue);
 }
 
 * {
@@ -56,6 +78,15 @@ a {
 img {
   max-width: 100%;
   height: auto;
+}
+
+button {
+  font: inherit;
+}
+
+/* display を指定した要素でも、hidden 属性で確実に隠す */
+[hidden] {
+  display: none !important;
 }
 
 /* ヘッダー・ナビ */
@@ -130,17 +161,12 @@ h2 {
   margin: 0 0 16px;
 }
 
-/* トップの主役画像 */
-.hero {
-  margin: 0 0 32px;
-}
-
-.hero .placeholder {
-  aspect-ratio: 16 / 9;
-}
-
-.hero-text {
-  text-align: center;
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
 }
 
 /* 画像がまだ無い場所を示す枠 */
@@ -157,15 +183,10 @@ h2 {
 }
 
 /* カード */
-.cards,
-.gallery {
+.cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 24px;
-}
-
-.gallery {
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
 .card {
@@ -244,6 +265,71 @@ h2 {
   color: var(--on-accent);
 }
 
+/* 丸いボタン（前へ・次へ） */
+.round-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.round-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.round-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.round-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* SNSのアイコンリンク */
+.sns {
+  display: flex;
+  gap: 12px;
+}
+
+.sns a {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--muted);
+}
+
+.sns a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sns svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* 注記 */
 .notice {
   margin: 16px 0;
@@ -253,7 +339,7 @@ h2 {
   font-size: 0.9rem;
 }
 
-/* 一覧（経歴・参加イベントなど） */
+/* 一覧（リンク・公募歴など） */
 .list {
   margin: 0;
   padding: 0;
@@ -265,7 +351,684 @@ h2 {
   border-bottom: 1px solid var(--border);
 }
 
-/* 上に戻るボタン（script.js が追加する） */
+/* ===== Top ===== */
+/* PCでは中央に縦長の画面。左右は斜線の暗い領域 */
+[data-page="top"] {
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--bg) 0 6px,
+    var(--bg-hatch) 6px 8px
+  );
+}
+
+.stage {
+  position: relative;
+  max-width: none;
+  width: min(100%, 520px);
+  height: 100vh;
+  height: 100dvh;
+  margin: 0 auto;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.intro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.intro video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.skip {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  padding: 4px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.skip:hover {
+  color: var(--text);
+}
+
+/* 暗転。チッチと点滅してから暗くなる */
+.blackout {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--bg-deep);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stage.is-blackout .blackout {
+  animation: flicker 0.9s steps(1, end) forwards;
+}
+
+.stage.is-menu .blackout {
+  animation: blackout-out 0.9s ease forwards;
+}
+
+.stage.is-instant .blackout {
+  animation: none;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  24% {
+    opacity: 0.1;
+  }
+  36% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  62% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes blackout-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* メニュー画面 */
+.menu {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.stage.is-menu .menu {
+  opacity: 1;
+  visibility: visible;
+}
+
+.stage.is-menu .intro {
+  display: none;
+}
+
+.menu-art {
+  position: relative;
+  flex: 0 0 48%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.menu-art .placeholder {
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+}
+
+/* 縦長のイラストを、枠の高さに収めて切り抜く（顔が入るよう、上寄りに合わせる） */
+.menu-art img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 18%;
+}
+
+.menu-art::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 40%;
+  background: linear-gradient(transparent, var(--bg));
+}
+
+.orbs {
+  --orb: clamp(44px, 12vw, 56px);
+  position: relative;
+  flex: 0 0 auto;
+  height: calc(var(--orb) * 2.4);
+  margin: -8px 16px 0;
+}
+
+/* 足元の波紋 */
+.orbs::before,
+.orbs::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: ripple 5s ease-in-out infinite;
+}
+
+.orbs::before {
+  width: 92%;
+  height: 78%;
+}
+
+.orbs::after {
+  width: 74%;
+  height: 56%;
+  animation-delay: -2.5s;
+}
+
+@keyframes ripple {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* 水晶玉 */
+.orb {
+  position: absolute;
+  z-index: 1;
+  width: var(--orb);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 26%, rgb(255 255 255 / 0.85) 0 7%, transparent 9%),
+    radial-gradient(
+      circle at 50% 50%,
+      color-mix(in srgb, var(--c) 55%, white) 0%,
+      var(--c) 45%,
+      color-mix(in srgb, var(--c) 35%, black) 100%
+    );
+  box-shadow:
+    0 0 20px color-mix(in srgb, var(--c) 55%, transparent),
+    inset -6px -8px 14px rgb(0 0 0 / 0.35);
+  color: var(--c);
+  text-decoration: none;
+  transition: box-shadow 0.2s, translate 0.2s;
+  animation: float 4s ease-in-out infinite;
+}
+
+.orb span {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-top: 6px;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.orb:hover,
+.orb:focus-visible {
+  translate: 0 -4px;
+  box-shadow:
+    0 0 34px var(--c),
+    inset -6px -8px 14px rgb(0 0 0 / 0.35);
+}
+
+/* 弧状（ネックレスのように、中央が低い） */
+.orb--about {
+  --c: var(--c-red);
+  left: 10%;
+  top: 0;
+}
+
+.orb--illust {
+  --c: var(--c-orange);
+  left: 30%;
+  top: 34%;
+  animation-delay: -0.8s;
+}
+
+.orb--novel {
+  --c: var(--c-yellow);
+  left: 50%;
+  top: 48%;
+  animation-delay: -1.6s;
+}
+
+.orb--dev {
+  --c: var(--c-green);
+  left: 70%;
+  top: 34%;
+  animation-delay: -2.4s;
+}
+
+.orb--crossover {
+  --c: var(--c-blue);
+  left: 90%;
+  top: 0;
+  animation-delay: -3.2s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    margin-top: 0;
+  }
+  50% {
+    margin-top: -4px;
+  }
+}
+
+.menu-name {
+  margin: auto 0;
+  padding-bottom: 24px;
+  text-align: center;
+  font-size: 2.6rem;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+}
+
+/* ===== Illust ===== */
+.carousel {
+  --slide-w: min(64vw, 340px);
+  padding: 24px 0 0;
+}
+
+.carousel-track {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding: 16px calc((100% - var(--slide-w)) / 2);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  flex: 0 0 var(--slide-w);
+  scroll-snap-align: center;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.slide .placeholder {
+  aspect-ratio: 3 / 4;
+}
+
+/* 中央のカードを大きく、左右を小さく見せる（JSが .has-active を付ける） */
+.carousel.has-active .slide:not(.is-active) {
+  transform: scale(0.82);
+  opacity: 0.55;
+}
+
+.carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.carousel-dots span {
+  width: 24px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.carousel-dots span.is-active {
+  background: var(--accent);
+}
+
+/* ===== Novel ===== */
+.novel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: center;
+  padding: 24px 0;
+}
+
+.novel + .novel {
+  border-top: 1px solid var(--border);
+}
+
+.book {
+  display: flex;
+  justify-content: center;
+  perspective: 1400px;
+}
+
+/* 開いた状態を基本とし、アニメーションで「閉じた状態から開く」 */
+.book-body {
+  position: relative;
+  width: min(100%, 440px);
+  aspect-ratio: 3 / 2;
+  animation: book-slide 1.4s 0.5s ease both;
+}
+
+.page-right,
+.cover-front,
+.cover-back {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+}
+
+.page-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 50%;
+  padding: 16px;
+  border-radius: 0 6px 6px 0;
+  background-image: repeating-linear-gradient(
+    transparent 0 22px,
+    var(--border) 22px 23px
+  );
+}
+
+.cover {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 50%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transform: rotateY(-180deg);
+  animation: cover-open 1.4s 0.5s ease both;
+}
+
+.cover-front,
+.cover-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+
+.cover-front {
+  display: flex;
+  padding: 12px;
+  border-radius: 0 6px 6px 0;
+  border-color: var(--accent);
+}
+
+.cover-front .placeholder {
+  height: 100%;
+}
+
+.cover-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border-radius: 6px 0 0 6px;
+  transform: rotateY(180deg);
+  text-align: center;
+}
+
+.catch {
+  margin: 0;
+  color: var(--accent);
+}
+
+@keyframes book-slide {
+  from {
+    transform: translateX(-25%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes cover-open {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(-180deg);
+  }
+}
+
+.novel-info > * {
+  animation: float-up 0.8s ease both;
+  animation-delay: calc(1.6s + var(--i, 0) * 150ms);
+}
+
+.novel-info > :nth-child(2) {
+  --i: 1;
+}
+
+.novel-info > :nth-child(3) {
+  --i: 2;
+}
+
+@keyframes float-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.novel-title {
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+  display: block;
+  font-size: 1.5rem;
+}
+
+.novel-synopsis {
+  margin: 0;
+  color: var(--muted);
+}
+
+.novel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding-top: 16px;
+  color: var(--muted);
+}
+
+/* ===== Dev ===== */
+/* サイバー空間のような、グリッド線と発光 */
+[data-page="dev"] {
+  background:
+    linear-gradient(color-mix(in srgb, var(--accent) 7%, transparent) 1px, transparent 1px)
+      0 0 / 40px 40px,
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 7%, transparent) 1px, transparent 1px)
+      0 0 / 40px 40px,
+    var(--bg);
+}
+
+.dev-label {
+  font-family: var(--font-mono);
+}
+
+.dev-list {
+  display: grid;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.dev-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 24px;
+  padding: 20px;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* 角の括弧 */
+.dev-item::before,
+.dev-item::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--accent);
+}
+
+.dev-item::before {
+  top: -2px;
+  left: -2px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.dev-item::after {
+  right: -2px;
+  bottom: -2px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.dev-label {
+  margin: 0 0 4px;
+  color: var(--accent);
+  font-size: 0.8rem;
+}
+
+.dev-shot .placeholder {
+  aspect-ratio: 4 / 3;
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.dev-text h3 {
+  margin: 0 0 8px;
+  font-size: 1.3rem;
+}
+
+.dev-text p {
+  margin: 0 0 8px;
+}
+
+/* 上から順にフェードして現れる */
+.fall > * {
+  animation: fall-in 0.7s ease both;
+  animation-delay: calc(var(--i, 0) * 140ms);
+}
+
+.fall > :nth-child(2) {
+  --i: 1;
+}
+
+.fall > :nth-child(3) {
+  --i: 2;
+}
+
+.dev-list > .dev-item {
+  animation: fall-in 0.7s ease both;
+  animation-delay: calc(var(--i, 3) * 140ms);
+}
+
+.dev-list > .dev-item:nth-child(2) {
+  --i: 4;
+}
+
+.dev-list > .dev-item:nth-child(3) {
+  --i: 5;
+}
+
+.dev-item .dev-shot {
+  animation: fall-in 0.7s ease both;
+  animation-delay: calc(var(--i, 3) * 140ms + 160ms);
+}
+
+.dev-item .dev-text {
+  animation: fall-in 0.7s ease both;
+  animation-delay: calc(var(--i, 3) * 140ms + 320ms);
+}
+
+.dev-list > .dev-item:nth-child(2) .dev-shot,
+.dev-list > .dev-item:nth-child(2) .dev-text {
+  --i: 4;
+}
+
+.dev-list > .dev-item:nth-child(3) .dev-shot,
+.dev-list > .dev-item:nth-child(3) .dev-text {
+  --i: 5;
+}
+
+@keyframes fall-in {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ===== About ===== */
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 280px);
+  gap: 32px;
+  align-items: start;
+  padding-top: 16px;
+}
+
+.field {
+  margin: 0;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.field .label {
+  display: inline-block;
+  width: 5em;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.portrait .placeholder {
+  aspect-ratio: 3 / 4;
+}
+
+/* ===== 上に戻るボタン（script.js が追加する） ===== */
 .to-top {
   position: fixed;
   right: 16px;
@@ -277,7 +1040,6 @@ h2 {
   border-radius: 50%;
   background: var(--card-bg);
   color: var(--accent);
-  font: inherit;
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
@@ -300,4 +1062,29 @@ footer {
   padding: 24px;
   text-align: center;
   color: var(--muted);
+}
+
+/* ===== スマホ ===== */
+@media (max-width: 640px) {
+  .novel,
+  .dev-item,
+  .about-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portrait {
+    order: -1;
+    max-width: 240px;
+  }
+}
+
+/* 動きを減らす設定の人には、演出を止める */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }

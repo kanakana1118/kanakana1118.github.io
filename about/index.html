@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About | 叶奏</title>
-  <meta name="description" content="叶奏のプロフィール、SNS、参加したイベント。">
+  <meta name="description" content="叶奏のプロフィール、SNS、参加したイベント、公募歴。">
   <link rel="stylesheet" href="../style.css">
   <script src="../script.js" defer></script>
 </head>
-<body>
+<body data-page="about">
   <header class="site-header">
     <a class="site-title" href="../index.html">叶奏</a>
     <nav>
@@ -24,9 +24,16 @@
   <main>
     <h1>About</h1>
 
-    <section id="profile">
-      <h2>プロフィール</h2>
-      <p>【仮】叶奏です。ここに自己紹介を書きます。</p>
+    <section class="about-grid" id="profile">
+      <div class="profile">
+        <p class="field"><span class="label">name</span>叶奏</p>
+        <p class="field">【仮】自己紹介の1行目</p>
+        <p class="field">【仮】自己紹介の2行目</p>
+        <p class="field">【仮】自己紹介の3行目</p>
+      </div>
+      <div class="portrait">
+        <div class="placeholder">【仮】イラスト</div>
+      </div>
     </section>
 
     <section id="links">
@@ -39,7 +46,7 @@
     </section>
 
     <section id="events">
-      <h2>参加イベント</h2>
+      <h2>イベント</h2>
       <p class="lead">新しい順に載せています。</p>
       <p class="notice">【仮】頒布物は、KAMITSUBAKI STUDIO の二次創作ガイドラインの範囲内で作った、個人による非営利の二次創作です。公式とは関係ありません。</p>
       <div class="cards">
@@ -49,6 +56,13 @@
           <p>【仮】開催日 / 頒布物</p>
         </article>
       </div>
+    </section>
+
+    <section id="contests">
+      <h2>公募歴</h2>
+      <ul class="list">
+        <li>【仮】開催年 / 賞の名前 / 結果（例: 一次選考通過）</li>
+      </ul>
     </section>
   </main>
 
