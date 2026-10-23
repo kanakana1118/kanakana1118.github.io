@@ -493,6 +493,24 @@ body[data-page="top"] .to-top {
   height: auto;
 }
 
+/* イラストの上のほうに置く、サイトの名前。
+   --title-y: イラストの上端から何%の高さか */
+.menu-title {
+  --title-y: 7%;
+  position: absolute;
+  top: var(--title-y);
+  right: 0;
+  left: 0;
+  margin: 0;
+  padding: 0 16px;
+  text-align: center;
+  font-size: clamp(2.3rem, 5.6vw, 5.2rem);
+  letter-spacing: 0.25em;
+  text-indent: 0.25em;
+  text-shadow: 0 0 14px var(--bg-deep), 0 0 4px var(--bg-deep);
+  pointer-events: none;
+}
+
 /* 玉と文字を読みやすくする、かなり透けた青みがかった黒のグラデーション。
    イラストの下端から、--shade-h の高さまで。上は透明で、下に行くほど濃くなる。
    --shade   : 色（R G B。空白区切り）
@@ -514,6 +532,22 @@ body[data-page="top"] .to-top {
     rgb(var(--shade) / var(--shade-a))
   );
   pointer-events: none;
+}
+
+/* 上のほう（「叶奏の備忘録」の後ろ）にも、同じ色のグラデーション。
+   イラストの上端が一番濃く、文字の下端あたりで消える。
+   --shade-top-h : 高さ（イラストの高さに対する%。文字の下端に合わせる） */
+.menu-shade--top {
+  --shade-top-h: 14.5%;
+  top: 0;
+  bottom: auto;
+  height: var(--shade-top-h);
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--shade) / var(--shade-a)),
+    rgb(var(--shade) / calc(var(--shade-a) * 0.5)) 55%,
+    rgb(var(--shade) / 0)
+  );
 }
 
 /* 玉・名前・説明文は、イラストの上に重ねる。イラストに対して位置を固定し、イラストと一緒にスクロールする。
@@ -558,6 +592,10 @@ body[data-page="top"] .to-top {
    --orb-shade         玉の下側の影の濃さ（0〜1）
    --orb-hl-x / -y     白いハイライトの位置（%）
    --orb-hl-size       ハイライトの大きさ（%）
+   --orb-hl-alpha      ハイライトの濃さ（0〜1。1で真っ白、小さいほど透ける）
+   --orb-sheen         ハイライトの外側にかかる、影のようなグラデの光の濃さ（0〜1）
+   --orb-sheen-angle   そのグラデの向き（315deg ＝ 左上から）
+   --orb-sheen-reach   そのグラデが消えるところ（玉の何%まで届くか）
    --orb-float         ふわふわ浮く距離
    玉の色は、先頭の :root の --c-red などで変える（ページの差し色と共通）。
    位置は、下の .orb--about などの left / top（%）で変える。 */
@@ -566,10 +604,14 @@ body[data-page="top"] .to-top {
   --orb: clamp(60px, 6.5vw, 110px);
   --orb-glow: calc(var(--orb) * 0.36);
   --orb-glow-strength: 55%;
-  --orb-shade: 0.35;
-  --orb-hl-x: 32%;
-  --orb-hl-y: 26%;
-  --orb-hl-size: 7%;
+  --orb-shade: 0.65;
+  --orb-hl-x: 35.5%;
+  --orb-hl-y: 30%;
+  --orb-hl-size: 4.2%;
+  --orb-hl-alpha: 0.8;
+  --orb-sheen: 0.2;
+  --orb-sheen-angle: 135deg;
+  --orb-sheen-reach: 35%;
   --orb-float: calc(var(--orb) * 0.07);
   position: relative;
   width: min(100%, 760px);
@@ -584,17 +626,27 @@ body[data-page="top"] .to-top {
   aspect-ratio: 1;
   transform: translateX(-50%);
   border-radius: 50%;
+  /* 上の層ほど手前。点のハイライト → 光のグラデ → 影（縁の暗がり）→ 玉の色 の順 */
   background:
     radial-gradient(
       circle at var(--orb-hl-x) var(--orb-hl-y),
-      rgb(255 255 255 / 0.85) 0 var(--orb-hl-size),
+      rgb(255 255 255 / var(--orb-hl-alpha)) 0 var(--orb-hl-size),
       transparent calc(var(--orb-hl-size) + 2%)
+    ),
+    linear-gradient(
+      var(--orb-sheen-angle),
+      rgb(255 255 255 / var(--orb-sheen)),
+      transparent var(--orb-sheen-reach)
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      transparent 45%,
+      color-mix(in srgb, var(--c) 35%, black) 100%
     ),
     radial-gradient(
       circle at 50% 50%,
       color-mix(in srgb, var(--c) 55%, white) 0%,
-      var(--c) 45%,
-      color-mix(in srgb, var(--c) 35%, black) 100%
+      var(--c) 45%
     );
   box-shadow:
     0 0 var(--orb-glow) color-mix(in srgb, var(--c) var(--orb-glow-strength), transparent),
@@ -1348,6 +1400,10 @@ footer {
 
   .menu-shade {
     --shade-h: 68%;
+  }
+
+  .menu-shade--top {
+    --shade-top-h: 20%;
   }
 
   /* 玉の上端を、イラストの上から一定の高さ（顔のあごの少し下）に固定する。
