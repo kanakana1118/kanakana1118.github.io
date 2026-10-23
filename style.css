@@ -1,8 +1,25 @@
+/* かなは Kokoro、漢字と英数字は Zen Old Mincho（どちらも OFL。fonts/ を参照） */
+@font-face {
+  font-family: "Kokoro";
+  src: url("fonts/kokoro-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Zen Old Mincho";
+  src: url("fonts/zen-old-mincho-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
 :root {
+  --font-serif: "Kokoro", "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
   --bg: #fafafa;
   --text: #222;
   --muted: #666;
   --accent: #3b82f6;
+  --on-accent: #fff;
   --card-bg: #fff;
   --border: #e5e5e5;
 }
@@ -13,6 +30,7 @@
     --text: #e8e8e8;
     --muted: #9aa0a6;
     --accent: #60a5fa;
+    --on-accent: #0b0d10;
     --card-bg: #1e2127;
     --border: #2c3036;
   }
@@ -26,7 +44,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  font-family: var(--font-serif);
+  font-synthesis: none;
   line-height: 1.8;
 }
 
@@ -34,6 +53,12 @@ a {
   color: var(--accent);
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ヘッダー・ナビ */
 .site-header {
   display: flex;
   flex-wrap: wrap;
@@ -44,37 +69,103 @@ a {
   border-bottom: 1px solid var(--border);
 }
 
-.site-header h1 {
-  margin: 0;
+.site-title {
   font-size: 1.4rem;
-}
-
-.site-header nav a {
-  margin-left: 16px;
+  color: var(--text);
   text-decoration: none;
 }
 
+.site-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.site-header nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-header nav a:hover,
+.site-header nav a[aria-current="page"] {
+  color: var(--accent);
+}
+
+.site-header nav a[aria-current="page"] {
+  border-bottom: 2px solid var(--accent);
+}
+
+/* 本文 */
 main {
-  max-width: 800px;
+  max-width: 880px;
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: 32px 24px;
 }
 
 section {
-  padding: 32px 0;
+  padding: 40px 0;
+}
+
+/* 太字のフォントは入れていないので、見出しは大きさで区別する */
+h1,
+h2,
+h3 {
+  font-weight: 400;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
 }
 
 h2 {
-  margin: 0 0 12px;
+  margin: 0 0 16px;
   padding-bottom: 6px;
   border-bottom: 2px solid var(--accent);
   display: inline-block;
 }
 
-.cards {
+.lead {
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+/* トップの主役画像 */
+.hero {
+  margin: 0 0 32px;
+}
+
+.hero .placeholder {
+  aspect-ratio: 16 / 9;
+}
+
+.hero-text {
+  text-align: center;
+}
+
+/* 画像がまだ無い場所を示す枠 */
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* カード */
+.cards,
+.gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  gap: 24px;
+}
+
+.gallery {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
 .card {
@@ -85,7 +176,124 @@ h2 {
 }
 
 .card h3 {
+  margin: 12px 0 8px;
+}
+
+.card p {
   margin: 0 0 8px;
+}
+
+.card .placeholder {
+  aspect-ratio: 4 / 3;
+}
+
+/* 項目の説明（役割・使用技術など） */
+.meta {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+}
+
+.meta dt {
+  float: left;
+  clear: left;
+  width: 8em;
+  color: var(--muted);
+}
+
+.meta dd {
+  margin: 0 0 4px 8em;
+}
+
+/* タグ */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag {
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* リンクボタン */
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0 0;
+}
+
+.button {
+  display: inline-block;
+  padding: 6px 16px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.button:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* 注記 */
+.notice {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--border);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* 一覧（経歴・参加イベントなど） */
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* 上に戻るボタン（script.js が追加する） */
+.to-top {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  background: var(--card-bg);
+  color: var(--accent);
+  font: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+
+.to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.to-top:hover {
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 footer {

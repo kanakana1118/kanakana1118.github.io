@@ -4,54 +4,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>叶奏 | Home</title>
-  <meta name="description" content="叶奏の個人ホームページ">
+  <meta name="description" content="叶奏の個人ホームページ。イラスト・小説・開発をまとめています。">
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
   <header class="site-header">
-    <h1>叶奏</h1>
+    <a class="site-title" href="index.html">叶奏</a>
     <nav>
-      <a href="#about">About</a>
-      <a href="#career">Career</a>
-      <a href="#works">Works</a>
-      <a href="#contact">Contact</a>
+      <a href="index.html" aria-current="page">Top</a>
+      <a href="illust/index.html">Illust</a>
+      <a href="novel/index.html">Novel</a>
+      <a href="dev/index.html">Dev</a>
+      <a href="crossover/index.html">Crossover</a>
+      <a href="about/index.html">About</a>
     </nav>
   </header>
 
   <main>
-    <section id="about">
-      <h2>About</h2>
-      <p>はじめまして、叶奏です。ここに自己紹介を書いてください。</p>
-    </section>
+    <figure class="hero">
+      <div class="placeholder">【仮】トップに置くイラスト</div>
+    </figure>
 
-    <section id="career">
-      <h2>Career</h2>
-      <ul>
-        <li><strong>20XX年</strong> 経歴や学歴をここに書きます</li>
-        <li><strong>20XX年</strong> 経歴や学歴をここに書きます</li>
-      </ul>
-    </section>
+    <div class="hero-text">
+      <h1>叶奏</h1>
+      <p class="lead">【仮】イラスト・小説・開発をしています。創作と開発を組み合わせて作っています。</p>
+    </div>
 
-    <section id="works">
-      <h2>Works</h2>
+    <section>
+      <h2>Menu</h2>
       <div class="cards">
         <article class="card">
-          <h3>作品 1</h3>
-          <p>作品の説明をここに書きます。</p>
+          <h3><a href="illust/index.html">Illust</a></h3>
+          <p>イラスト。一次創作と二次創作に分けています。</p>
         </article>
         <article class="card">
-          <h3>作品 2</h3>
-          <p>作品の説明をここに書きます。</p>
+          <h3><a href="novel/index.html">Novel</a></h3>
+          <p>書いている小説と、公募の選考歴です。</p>
+        </article>
+        <article class="card">
+          <h3><a href="dev/index.html">Dev</a></h3>
+          <p>作ったホームページなどの概要です。</p>
+        </article>
+        <article class="card">
+          <h3><a href="crossover/index.html">Crossover</a></h3>
+          <p>創作と開発が組み合わさったものです。</p>
+        </article>
+        <article class="card">
+          <h3><a href="about/index.html">About</a></h3>
+          <p>プロフィール、SNS、参加したイベントです。</p>
         </article>
       </div>
-    </section>
-
-    <section id="contact">
-      <h2>Contact</h2>
-      <p>
-        GitHub:
-        <a href="https://github.com/kanakana1118" target="_blank" rel="noopener">kanakana1118</a>
-      </p>
     </section>
   </main>
 
