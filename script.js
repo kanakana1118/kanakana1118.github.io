@@ -36,6 +36,8 @@
     var BLACKOUT_MS = 900; // style.css の flicker の長さと合わせる
     var BLACKOUT_LEAD_SEC = 0.5; // 動画が終わる、この秒数前から点滅を始める
     var NO_VIDEO_MS = 3500; // 動画が無い間は、この時間で次へ進む
+    var GLITCH_MS = 1200; // 動画の始まりの乱れが収まるまで。style.css の --glitch-ms と合わせる
+    var GLITCH_MAX = 70; // 横にずれる、いちばん大きい幅（px）
     var started = false;
 
     var seen = false;
@@ -67,6 +69,39 @@
       window.setTimeout(toMenu, NO_VIDEO_MS);
       return;
     }
+
+    // 再生が始まったら、始まりの「画面が横にざざっとずれる」演出を動かす
+    function onPlaying() {
+      stage.classList.add("is-playing");
+      glitch();
+    }
+
+    // SVG フィルター（#tv-glitch）の、ずれの大きさと帯の位置を、細かく入れ替える
+    function glitch() {
+      var intro = stage.querySelector(".intro");
+      var turb = document.querySelector("#tv-glitch feTurbulence");
+      var disp = document.querySelector("#tv-glitch feDisplacementMap");
+      if (!intro || !turb || !disp) return;
+      var t0 = window.performance.now();
+      intro.style.filter = "url(#tv-glitch)";
+
+      function tick() {
+        var p = (window.performance.now() - t0) / GLITCH_MS;
+        if (p >= 1) {
+          intro.style.filter = "";
+          return;
+        }
+        // 後半ほど弱くなる。ときどき、ずれが止まる（ざざっ、ざざっ、となる）
+        var amp = Math.random() < 0.25 ? 0 : (1 - p) * (1 - p) * GLITCH_MAX * (0.4 + Math.random() * 0.6);
+        disp.setAttribute("scale", amp.toFixed(1));
+        turb.setAttribute("seed", String(Math.floor(Math.random() * 1000)));
+        turb.setAttribute("baseFrequency", "0 " + (0.004 + Math.random() * 0.02).toFixed(3));
+        window.setTimeout(tick, 60);
+      }
+      tick();
+    }
+    if (!video.paused && video.readyState > 2) onPlaying();
+    else video.addEventListener("playing", onPlaying, { once: true });
 
     // 再生位置が「終わりの少し前」に来たら点滅を始める（timeupdate は粗いので、毎フレーム見る）
     function watch() {

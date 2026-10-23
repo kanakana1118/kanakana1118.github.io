@@ -10,6 +10,15 @@
   <script src="script.js" defer></script>
 </head>
 <body data-page="top">
+  <!-- 動画の始まりで、画面を横にずらすフィルター（script.js が動かす。見た目には出ない） -->
+  <svg class="glitch-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <filter id="tv-glitch" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0 0.04" numOctaves="2" seed="1" result="bands"/>
+      <feColorMatrix in="bands" type="matrix" values="8 0 0 0 -3.5  0 0 0 0 0.5  0 0 0 0 0  0 0 0 0 1" result="map"/>
+      <feDisplacementMap in="SourceGraphic" in2="map" scale="0" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
   <main class="stage">
     <section class="intro" aria-label="オープニング">
       <video src="videos/timelapse.mp4" muted autoplay playsinline preload="auto" aria-label="タイムラプス動画"></video>
