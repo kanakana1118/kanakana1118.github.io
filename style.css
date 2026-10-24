@@ -873,6 +873,38 @@ body[data-page="top"] .to-top {
   color: var(--muted);
 }
 
+/* スライダーの下の、一覧（スクロールで見る）。縦横比のまま、左から右へ、掲載順に並べる */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 16px;
+  align-items: start;
+}
+
+.gallery figure {
+  margin: 0;
+}
+
+.gallery img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.gallery figcaption {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+@media (min-width: 720px) {
+  .gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 /* 循環するスライダー（JSが .is-loop を付ける）。全スライドを重ねて、位置だけずらす */
 .carousel.is-loop .carousel-track {
   display: grid;
