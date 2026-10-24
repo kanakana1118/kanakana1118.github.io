@@ -618,11 +618,11 @@ body[data-page="top"] .to-top {
    イラストの下端から、--shade-h の高さまで。上は透明で、下に行くほど濃くなる。
    --shade   : 色（R G B。空白区切り）
    --shade-h : 高さ（イラストの高さに対する%）
-   --shade-a : 一番濃いところの濃さ（0〜1） */
+   --shade-a : 一番濃いところの濃さ（0〜1。下のグラデーションの値。上のグラデーションは、.menu-shade--top の --shade-a で別に決める） */
 .menu-shade {
   --shade: 6 12 36;
   --shade-h: 55%;
-  --shade-a: 0.55;
+  --shade-a: 0.78;
   position: absolute;
   right: 0;
   bottom: 0;
@@ -641,6 +641,7 @@ body[data-page="top"] .to-top {
    イラストの上端が一番濃く、文字の下端あたりで消える。
    --shade-top-h : 高さ（イラストの高さに対する%。文字の下端に合わせる） */
 .menu-shade--top {
+  --shade-a: 0.55;
   --shade-top-h: 14.5%;
   top: 0;
   bottom: auto;
@@ -838,6 +839,7 @@ body[data-page="top"] .to-top {
 .carousel-track {
   position: relative;
   display: flex;
+  align-items: center;
   gap: var(--slide-gap);
   padding: 16px 0;
   overflow-x: auto;
@@ -858,13 +860,27 @@ body[data-page="top"] .to-top {
   aspect-ratio: 3 / 4;
 }
 
+/* 作品の画像は、縦横比のまま。説明は小さめの文字 */
+.slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.slide p {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 /* 循環するスライダー（JSが .is-loop を付ける）。全スライドを重ねて、位置だけずらす */
 .carousel.is-loop .carousel-track {
   display: grid;
+  align-items: center;
   overflow: hidden;
   scroll-snap-type: none;
-  touch-action: pan-y;
-  cursor: grab;
+  touch-action: pan-y; /* 横のなぞりはスワイプに使い、縦のスクロールはそのまま使える */
+  cursor: pointer;
 }
 
 .carousel.is-loop .slide {

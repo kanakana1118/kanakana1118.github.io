@@ -188,19 +188,45 @@
       if (event.key === "ArrowRight") go(1);
     });
 
-    // 左右のスワイプ
-    var startX = null;
-    track.addEventListener("pointerdown", function (event) {
-      startX = event.clientX;
+    // スマホ: 左右になぞる（スワイプ）。右から左へ＝次、左から右へ＝前。
+    // pointer ではなく touch で見る（斜めになぞってスクロールが始まっても、指を離したときに判定できる）
+    var touchX = null;
+    var touchY = null;
+    track.addEventListener(
+      "touchstart",
+      function (event) {
+        if (event.touches.length !== 1) {
+          touchX = null;
+          return;
+        }
+        touchX = event.touches[0].clientX;
+        touchY = event.touches[0].clientY;
+      },
+      { passive: true }
+    );
+    track.addEventListener(
+      "touchend",
+      function (event) {
+        if (touchX === null || !event.changedTouches.length) return;
+        var dx = event.changedTouches[0].clientX - touchX;
+        var dy = event.changedTouches[0].clientY - touchY;
+        touchX = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+      },
+      { passive: true }
+    );
+    track.addEventListener("touchcancel", function () {
+      touchX = null;
     });
-    track.addEventListener("pointerup", function (event) {
-      if (startX === null) return;
-      var dx = event.clientX - startX;
-      startX = null;
-      if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
-    });
-    track.addEventListener("pointercancel", function () {
-      startX = null;
+
+    // タップ（クリック）: 左右に見えている隣の作品をタップすると、その作品が中央に来る
+    track.addEventListener("click", function (event) {
+      if (event.target.closest("a, button")) return;
+      var slide = event.target.closest(".slide");
+      if (!slide) return;
+      var pos = slide.getAttribute("data-pos");
+      if (pos === "1") go(1);
+      else if (pos === "-1") go(-1);
     });
 
     render();
