@@ -232,6 +232,156 @@
     render();
   }
 
+  // ---- 左の目次・一覧（Novel の作品一覧と、各ページの目次で共通）----
+  // 広い画面（幅1360px以上）では、左に出しっぱなし。狭い画面では、ページの先頭の3本横線のボタンから、左へ引き出す（最初は閉じている）。
+  // rows: [{ name, note, level(0=大項目, 1=小項目), onSelect }]
+  function createSideList(heading, rows) {
+    var host = document.querySelector("main");
+    var list = el("nav", "side-list");
+    list.setAttribute("aria-label", heading);
+
+    var head = el("div", "side-list-head");
+    var title = el("p", "side-list-title");
+    title.textContent = heading;
+    var closeButton = el("button", "side-list-close");
+    closeButton.type = "button";
+    closeButton.setAttribute("aria-label", heading + "を閉じる");
+    closeButton.textContent = "×";
+    head.appendChild(title);
+    head.appendChild(closeButton);
+    list.appendChild(head);
+
+    var toggle = el("button", "side-list-toggle");
+    toggle.type = "button";
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", heading + "を開く");
+    for (var b = 0; b < 3; b++) toggle.appendChild(el("span", "side-list-bar")); // 3本の横線
+    var backdrop = el("div", "side-list-backdrop");
+
+    function setOpen(open) {
+      list.classList.toggle("is-open", open);
+      backdrop.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    var items = el("ol", "side-list-items");
+    var buttons = rows.map(function (row) {
+      var li = el("li");
+      var button = el("button", "side-list-item" + (row.level ? " side-list-item--sub" : ""));
+      button.type = "button";
+      var name = el("span", "side-list-name");
+      name.textContent = row.name;
+      button.appendChild(name);
+      if (row.note) {
+        var note = el("span", "side-list-note");
+        note.textContent = row.note;
+        button.appendChild(note);
+      }
+      button.addEventListener("click", function () {
+        row.onSelect();
+        setOpen(false);
+      });
+      li.appendChild(button);
+      items.appendChild(li);
+      return button;
+    });
+    list.appendChild(items);
+
+    toggle.addEventListener("click", function () {
+      setOpen(true);
+    });
+    closeButton.addEventListener("click", function () {
+      setOpen(false);
+    });
+    backdrop.addEventListener("click", function () {
+      setOpen(false);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") setOpen(false);
+    });
+
+    host.appendChild(list);
+    host.appendChild(backdrop);
+    host.insertBefore(toggle, host.firstChild); // 見出しの上。スクロールすると、画面の上に付いてくる
+
+    return {
+      buttons: buttons,
+      setCurrent: function (current) {
+        buttons.forEach(function (button, i) {
+          button.classList.toggle("is-current", i === current);
+          if (i === current) button.setAttribute("aria-current", "true");
+          else button.removeAttribute("aria-current");
+        });
+      },
+    };
+  }
+
+  // ---- About / Illust / Develop / Crossover: ページ内の目次 ----
+  function initPageToc() {
+    var page = document.body.getAttribute("data-page");
+    var rows = []; // { name, note, level, target }
+    function text(node) {
+      return node ? node.textContent.trim() : "";
+    }
+    function add(name, note, level, target) {
+      if (target) rows.push({ name: name, note: note, level: level, target: target });
+    }
+    var heading = "目次";
+
+    if (page === "about") {
+      add("プロフィール", "", 0, document.getElementById("profile"));
+      add("Links", "", 0, document.getElementById("links"));
+      add("イベント", "", 0, document.getElementById("events"));
+      add("公募歴", "", 0, document.getElementById("contests"));
+    } else if (page === "illust") {
+      add("Pick Up", "", 0, document.querySelector(".carousel"));
+      add("Gallery", "", 0, document.getElementById("gallery"));
+      Array.prototype.forEach.call(document.querySelectorAll("#gallery figure"), function (figure) {
+        add(text(figure.querySelector("figcaption")), "", 1, figure);
+      });
+    } else if (page === "dev") {
+      heading = "作品一覧";
+      Array.prototype.forEach.call(document.querySelectorAll(".dev-item"), function (item) {
+        add(text(item.querySelector("h3")), text(item.querySelector(".dev-label")), 0, item);
+      });
+    } else if (page === "crossover") {
+      heading = "作品一覧";
+      Array.prototype.forEach.call(document.querySelectorAll("#works .card"), function (card) {
+        var tags = Array.prototype.map.call(card.querySelectorAll(".tag"), text).join(" × "); // 何と何を掛け合わせているか
+        add(text(card.querySelector("h3")), tags, 0, card);
+      });
+    }
+    if (rows.length < 2) return;
+
+    var sideList = createSideList(
+      heading,
+      rows.map(function (row, i) {
+        return {
+          name: row.name,
+          note: row.note,
+          level: row.level,
+          onSelect: function () {
+            sideList.setCurrent(i);
+            row.target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+          },
+        };
+      })
+    );
+
+    // 画面に見えている位置に合わせて、今いる項目を光らせる
+    function mark() {
+      var current = 0;
+      rows.forEach(function (row, i) {
+        if (row.target.getBoundingClientRect().top <= window.innerHeight * 0.45) current = i;
+      });
+      // ページの一番下まで来たら、最後の項目（短くて、上まで届かないことがあるため）
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) current = rows.length - 1;
+      sideList.setCurrent(current);
+    }
+    window.addEventListener("scroll", mark, { passive: true });
+    mark();
+  }
+
   // ---- Novel: 1冊の本。作品を切り替えると、ページがめくれる ----
   function initNovels(viewer) {
     var DEPTH = 0.8; // 紙どうしの奥行きの差(px)。重なり順を保つ
@@ -335,6 +485,7 @@
     var next = controls.querySelector("[data-next]");
     var counter = controls.querySelector(".novel-count");
     var index = 0;
+    var sideList = null;
 
     function update() {
       data.forEach(function (item, i) {
@@ -344,11 +495,7 @@
       prev.disabled = index === 0;
       next.disabled = index === n - 1;
       stage.classList.toggle("is-switched", index > 0 || stage.classList.contains("is-switched"));
-      listButtons.forEach(function (button, i) {
-        button.classList.toggle("is-current", i === index);
-        if (i === index) button.setAttribute("aria-current", "true");
-        else button.removeAttribute("aria-current");
-      });
+      if (sideList) sideList.setCurrent(index);
     }
 
     function turn(leaf) {
@@ -404,69 +551,20 @@
       showCatch(index, 800 + (count - 1) * 180);
     }
 
-    // 作品一覧（作品名とジャンルだけ）。PC の広い画面では左に出しっぱなし。狭い画面では、左から引き出す
-    var list = el("nav", "novel-list");
-    list.setAttribute("aria-label", "作品一覧");
-    var listHead = el("div", "novel-list-head");
-    listHead.appendChild(el("p", "novel-list-title"));
-    listHead.firstChild.textContent = "作品一覧";
-    var closeButton = el("button", "novel-list-close");
-    closeButton.type = "button";
-    closeButton.setAttribute("aria-label", "作品一覧を閉じる");
-    closeButton.textContent = "×";
-    listHead.appendChild(closeButton);
-    list.appendChild(listHead);
-
-    var items = el("ol", "novel-list-items");
-    var listButtons = data.map(function (item, i) {
-      var li = el("li");
-      var button = el("button", "novel-list-item");
-      button.type = "button";
-      var name = el("span", "novel-list-name");
-      name.textContent = item.title;
-      var genre = el("span", "novel-list-genre");
-      genre.textContent = item.genre;
-      button.appendChild(name);
-      button.appendChild(genre);
-      button.addEventListener("click", function () {
-        goTo(i);
-        setListOpen(false);
-      });
-      li.appendChild(button);
-      items.appendChild(li);
-      return button;
-    });
-    list.appendChild(items);
-
-    var toggle = el("button", "novel-list-toggle");
-    toggle.type = "button";
-    toggle.setAttribute("aria-expanded", "false");
-    toggle.setAttribute("aria-label", "作品一覧を開く");
-    for (var b = 0; b < 3; b++) toggle.appendChild(el("span", "novel-list-bar")); // 3本の横線
-    var backdrop = el("div", "novel-list-backdrop");
-
-    function setListOpen(open) {
-      list.classList.toggle("is-open", open);
-      backdrop.classList.toggle("is-open", open);
-      toggle.setAttribute("aria-expanded", open ? "true" : "false");
-    }
-    toggle.addEventListener("click", function () {
-      setListOpen(true);
-    });
-    closeButton.addEventListener("click", function () {
-      setListOpen(false);
-    });
-    backdrop.addEventListener("click", function () {
-      setListOpen(false);
-    });
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") setListOpen(false);
-    });
-
-    viewer.appendChild(list);
-    viewer.insertBefore(toggle, viewer.firstChild); // 本の上（スクロールすると、画面の上に付いてくる）
-    viewer.appendChild(backdrop);
-
+    // 作品一覧（作品名とジャンルだけ）。作品を押すと、ページがめくれて、その作品まで移る
+    sideList = createSideList(
+      "作品一覧",
+      data.map(function (item, i) {
+        return {
+          name: item.title,
+          note: item.genre,
+          level: 0,
+          onSelect: function () {
+            goTo(i);
+          },
+        };
+      })
+    );
     controls.hidden = false;
     update();
   }
@@ -563,6 +661,8 @@
 
   var viewer = document.querySelector(".novel-viewer");
   if (viewer) initNovels(viewer);
+
+  initPageToc();
 
   initReveal();
 })();

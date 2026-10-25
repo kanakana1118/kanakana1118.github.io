@@ -1397,36 +1397,44 @@ body[data-page="top"] .to-top {
   font-size: 0.9rem;
 }
 
-/* 作品一覧（作品名とジャンルだけ）。広い画面（PC）では、本の左に出しっぱなし。
-   狭い画面では、画面の左端の「作品一覧」を押すと、左から出てくる（最初は閉じている） */
+/* 目次から飛ぶ先は、上のボタンに隠れないよう、少し余白をとる */
+section[id],
+.dev-item,
+#works .card,
+#gallery figure {
+  scroll-margin-top: 72px;
+}
+
+/* 左の目次・一覧（Novel の作品一覧と、各ページの目次で共通）。
+   広い画面（PC）では、左に出しっぱなし。狭い画面では、ページの先頭の3本横線のボタンを押すと、左から出てくる（最初は閉じている） */
 .novel-viewer {
   position: relative;
 }
 
-.novel-list {
+.side-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.novel-list-title {
+.side-list-title {
   margin: 0;
   color: var(--muted);
   font-size: 0.85rem;
   letter-spacing: 0.2em;
 }
 
-.novel-list-head {
+.side-list-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.novel-list-close {
+.side-list-close {
   display: none;
 }
 
-.novel-list-items {
+.side-list-items {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1435,7 +1443,7 @@ body[data-page="top"] .to-top {
   list-style: none;
 }
 
-.novel-list-item {
+.side-list-item {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1452,39 +1460,48 @@ body[data-page="top"] .to-top {
   transition: border-color 0.2s, color 0.2s;
 }
 
-.novel-list-item:hover,
-.novel-list-item:focus-visible {
+.side-list-item:hover,
+.side-list-item:focus-visible {
   border-color: var(--accent);
 }
 
-.novel-list-item.is-current {
+.side-list-item.is-current {
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.novel-list-genre {
+.side-list-item--sub {
+  width: calc(100% - 16px);
+  margin-left: 16px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
+
+.side-list-note {
   color: var(--muted);
   font-size: 0.8rem;
 }
 
-.novel-list-toggle,
-.novel-list-backdrop {
+.side-list-toggle,
+.side-list-backdrop {
   display: none;
 }
 
 /* 広い画面: 本の左の余白に、出しっぱなし */
 @media (min-width: 1360px) {
-  .novel-list {
-    position: absolute;
-    top: 120px;
-    right: calc(100% + 28px);
+  .side-list {
+    position: fixed;
+    top: 150px;
+    left: calc((100vw - 880px) / 2 + 24px - 258px); /* 本文の列の左に、28px あけて置く */
     width: 230px;
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
   }
 }
 
 /* 狭い画面: 左から引き出す */
 @media (max-width: 1359px) {
-  .novel-list {
+  .side-list {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -1499,12 +1516,12 @@ body[data-page="top"] .to-top {
     transition: transform 0.35s ease;
   }
 
-  .novel-list.is-open {
+  .side-list.is-open {
     transform: none;
     box-shadow: 0 0 40px rgb(0 0 0 / 0.5);
   }
 
-  .novel-list-close {
+  .side-list-close {
     display: block;
     padding: 0 8px;
     border: 0;
@@ -1516,7 +1533,7 @@ body[data-page="top"] .to-top {
   }
 
   /* 3本の横線の、四角いボタン。スクロールしても、画面の上に付いてくる */
-  .novel-list-toggle {
+  .side-list-toggle {
     position: sticky;
     top: 12px;
     z-index: 30;
@@ -1535,7 +1552,7 @@ body[data-page="top"] .to-top {
     cursor: pointer;
   }
 
-  .novel-list-bar {
+  .side-list-bar {
     display: block;
     width: 20px;
     height: 2px;
@@ -1543,7 +1560,7 @@ body[data-page="top"] .to-top {
     background: var(--accent);
   }
 
-  .novel-list-backdrop {
+  .side-list-backdrop {
     position: fixed;
     inset: 0;
     z-index: 35;
@@ -1554,7 +1571,7 @@ body[data-page="top"] .to-top {
     transition: opacity 0.35s;
   }
 
-  .novel-list-backdrop.is-open {
+  .side-list-backdrop.is-open {
     opacity: 1;
     pointer-events: auto;
   }
