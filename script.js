@@ -441,7 +441,8 @@
     var toggle = el("button", "novel-list-toggle");
     toggle.type = "button";
     toggle.setAttribute("aria-expanded", "false");
-    toggle.textContent = "作品一覧";
+    toggle.setAttribute("aria-label", "作品一覧を開く");
+    for (var b = 0; b < 3; b++) toggle.appendChild(el("span", "novel-list-bar")); // 3本の横線
     var backdrop = el("div", "novel-list-backdrop");
 
     function setListOpen(open) {
@@ -463,7 +464,7 @@
     });
 
     viewer.appendChild(list);
-    viewer.appendChild(toggle);
+    viewer.insertBefore(toggle, viewer.firstChild); // 本の上（スクロールすると、画面の上に付いてくる）
     viewer.appendChild(backdrop);
 
     controls.hidden = false;
