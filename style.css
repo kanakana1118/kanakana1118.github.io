@@ -1019,6 +1019,7 @@ body[data-page="top"] .to-top {
   --tilt: 14deg; /* 見上げる角度。大きいほど、下側の厚みが見える */
   --book-depth: 28px; /* ページの束の厚み */
   --book-flip: 0.9s;
+  --gutter-shade: 0; /* 綴じ目の影の濃さ（0〜1。元は 0.34。0で影なし） */
   touch-action: manipulation; /* タップですぐ反応させる（ダブルタップの拡大待ちをしない） */
   /* 布の織り目と紙の粒（インラインSVG。外部ファイルは使わない） */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -1165,11 +1166,11 @@ body[data-page="top"] .to-top {
 }
 
 .face-right::before {
-  background: linear-gradient(90deg, rgb(20 26 48 / 0.34), rgb(20 26 48 / 0.08) 12%, transparent 26%);
+  background: linear-gradient(90deg, rgb(20 26 48 / var(--gutter-shade, 0.34)), rgb(20 26 48 / calc(var(--gutter-shade, 0.34) * 0.24)) 12%, transparent 26%);
 }
 
 .endpaper::before {
-  background: linear-gradient(270deg, rgb(20 26 48 / 0.34), rgb(20 26 48 / 0.08) 12%, transparent 26%);
+  background: linear-gradient(270deg, rgb(20 26 48 / var(--gutter-shade, 0.34)), rgb(20 26 48 / calc(var(--gutter-shade, 0.34) * 0.24)) 12%, transparent 26%);
 }
 
 /* 右ページの本文（仮の行） */
@@ -1218,6 +1219,21 @@ body[data-page="top"] .to-top {
   border-radius: inherit;
 }
 
+.face-cover .cover-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  color: rgb(255 255 255 / 0.78);
+  font-size: clamp(1.1rem, 3.2vw, 1.8rem);
+  letter-spacing: 0.35em;
+  writing-mode: vertical-rl;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.5);
+}
+
 .face-cover .placeholder {
   height: 100%;
   background: rgb(0 0 0 / 0.22);
@@ -1240,6 +1256,50 @@ body[data-page="top"] .to-top {
   padding: 10% 14% 10% 10%;
   border-radius: 3px 0 0 3px;
   text-align: center;
+}
+
+/* キャッチコピー: 左右のページにまたがる、1つの文字の箱。本が開いてから、ページの上に浮かび上がる
+   --catch-size  文字の大きさ（本の幅に合わせて変わる）
+   --catch-rise  浮かび上がる高さ */
+.catch-float {
+  --catch-rise: 22px;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 10%;
+  color: var(--book-ink);
+  font-size: min(1.7rem, calc((100vw - 48px) * 0.062)); /* 本の幅に合わせる（スマホは、画面の幅から余白を引いた分。PC は 1.7rem まで） */
+  letter-spacing: 0.06em;
+  line-height: 1.9;
+  text-align: center;
+  line-break: strict;
+  word-break: auto-phrase; /* 日本語を、文節のところで改行する（対応しているブラウザのみ） */
+  text-wrap: balance;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateZ(calc(var(--book-depth) * 0.9));
+  transition: opacity 0.25s;
+}
+
+.catch-float.is-in {
+  animation: catch-rise 1.1s ease both;
+}
+
+@keyframes catch-rise {
+  from {
+    opacity: 0;
+    transform: translateZ(calc(var(--book-depth) * 0.9 - var(--catch-rise)));
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateZ(calc(var(--book-depth) * 0.9));
+    filter: none;
+  }
 }
 
 .catch {
@@ -1288,6 +1348,14 @@ body[data-page="top"] .to-top {
   --i: 2;
 }
 
+.novel-info > :nth-child(4) {
+  --i: 3;
+}
+
+.novel-info > :nth-child(5) {
+  --i: 4;
+}
+
 /* 2回目以降は、すぐに浮き出る */
 .novel-stage.is-switched .novel-info > * {
   animation-delay: calc(0.5s + var(--i, 0) * 120ms);
@@ -1315,6 +1383,173 @@ body[data-page="top"] .to-top {
 .novel-synopsis {
   margin: 0;
   color: var(--muted);
+  line-break: strict;
+}
+
+.novel-synopsis p {
+  margin: 0 0 0.5em;
+}
+
+/* 受賞・選考の結果、実績など */
+.novel-note {
+  margin: 12px 0 0;
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+/* 作品一覧（作品名とジャンルだけ）。広い画面（PC）では、本の左に出しっぱなし。
+   狭い画面では、画面の左端の「作品一覧」を押すと、左から出てくる（最初は閉じている） */
+.novel-viewer {
+  position: relative;
+}
+
+.novel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.novel-list-title {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+}
+
+.novel-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.novel-list-close {
+  display: none;
+}
+
+.novel-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.novel-list-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.novel-list-item:hover,
+.novel-list-item:focus-visible {
+  border-color: var(--accent);
+}
+
+.novel-list-item.is-current {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.novel-list-genre {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.novel-list-toggle,
+.novel-list-backdrop {
+  display: none;
+}
+
+/* 広い画面: 本の左の余白に、出しっぱなし */
+@media (min-width: 1360px) {
+  .novel-list {
+    position: absolute;
+    top: 120px;
+    right: calc(100% + 28px);
+    width: 230px;
+  }
+}
+
+/* 狭い画面: 左から引き出す */
+@media (max-width: 1359px) {
+  .novel-list {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    width: min(82vw, 320px);
+    padding: 20px 16px;
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    background: var(--bg);
+    transform: translateX(-105%);
+    transition: transform 0.35s ease;
+  }
+
+  .novel-list.is-open {
+    transform: none;
+    box-shadow: 0 0 40px rgb(0 0 0 / 0.5);
+  }
+
+  .novel-list-close {
+    display: block;
+    padding: 0 8px;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    font-size: 1.4rem;
+    cursor: pointer;
+  }
+
+  .novel-list-toggle {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    z-index: 30;
+    display: block;
+    padding: 14px 8px;
+    border: 1px solid var(--accent);
+    border-left: 0;
+    border-radius: 0 8px 8px 0;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    color: var(--accent);
+    font: inherit;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    writing-mode: vertical-rl;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+
+  .novel-list-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    display: block;
+    background: rgb(5 5 8 / 0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s;
+  }
+
+  .novel-list-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 .novel-controls {
@@ -1621,5 +1856,9 @@ footer {
   .dev-shot::after,
   .dev-text::after {
     display: none;
+  }
+
+  .catch-float.is-in {
+    opacity: 1;
   }
 }

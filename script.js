@@ -240,11 +240,12 @@
     var n = works.length;
     if (!controls || n === 0) return;
 
-    var data = works.map(function (work) {
+    var data = works.map(function (work, i) {
       return {
-        cover: work.querySelector(".face-cover").innerHTML,
-        catchHtml: work.querySelector(".cover .endpaper").innerHTML,
-        page: work.querySelector(".sheet--static .face-right").innerHTML,
+        cover: i === 0 ? work.querySelector(".face-cover").innerHTML : "", // 表紙は、1冊の共通のもの（1作品目）だけ
+        catchText: work.querySelector(".cover .endpaper .catch").textContent.trim(),
+        title: work.querySelector(".novel-title").textContent.trim(),
+        genre: (work.querySelector(".tag") || { textContent: "" }).textContent.trim(),
         info: work.querySelector(".novel-info"),
       };
     });
@@ -259,11 +260,9 @@
       node.innerHTML = html;
       return node;
     }
-    function leftFace(html) {
+    function leftFace() {
       var node = el("div", "face face-left");
-      var paper = el("div", "endpaper");
-      paper.innerHTML = html;
-      node.appendChild(paper);
+      node.appendChild(el("div", "endpaper"));
       return node;
     }
 
@@ -275,22 +274,36 @@
     body.appendChild(el("div", "slab"));
 
     var base = sheet("sheet sheet--static", 0.2);
-    base.appendChild(face("face face-right", data[m].page));
+    base.appendChild(face("face face-right", ""));
     body.appendChild(base);
 
     var leaves = [];
     for (var k = 0; k < m; k++) {
       var leaf = sheet("sheet leaf", (m - k) * DEPTH);
-      leaf.appendChild(face("face face-right", data[k].page));
-      leaf.appendChild(leftFace(data[k + 1].catchHtml));
+      leaf.appendChild(face("face face-right", ""));
+      leaf.appendChild(leftFace());
       body.appendChild(leaf);
       leaves.push(leaf);
     }
 
     var cover = sheet("sheet cover", (m + 1) * DEPTH);
     cover.appendChild(face("face face-cover", data[0].cover));
-    cover.appendChild(leftFace(data[0].catchHtml));
+    cover.appendChild(leftFace());
     body.appendChild(cover);
+
+    // キャッチコピー: 左右のページにまたがる、1つの文字の箱。本が開いてから、ページの上に浮かび上がる
+    var floating = el("p", "catch-float");
+    body.appendChild(floating);
+    var catchTimer = null;
+    function showCatch(i, delay) {
+      floating.classList.remove("is-in");
+      window.clearTimeout(catchTimer);
+      catchTimer = window.setTimeout(function () {
+        floating.textContent = data[i].catchText;
+        void floating.offsetWidth; // 浮かび上がる演出を、最初から再生し直す
+        floating.classList.add("is-in");
+      }, delay);
+    }
 
     var book = el("div", "book");
     book.setAttribute("aria-hidden", "true");
@@ -316,6 +329,7 @@
     window.setTimeout(function () {
       body.classList.add("is-open");
     }, 500);
+    showCatch(0, 1500); // 表紙が開き終わってから
 
     var prev = controls.querySelector("[data-prev]");
     var next = controls.querySelector("[data-next]");
@@ -330,6 +344,11 @@
       prev.disabled = index === 0;
       next.disabled = index === n - 1;
       stage.classList.toggle("is-switched", index > 0 || stage.classList.contains("is-switched"));
+      listButtons.forEach(function (button, i) {
+        button.classList.toggle("is-current", i === index);
+        if (i === index) button.setAttribute("aria-current", "true");
+        else button.removeAttribute("aria-current");
+      });
     }
 
     function turn(leaf) {
@@ -345,6 +364,7 @@
       turn(leaves[index]);
       index += 1;
       update();
+      showCatch(index, 800); // ページがめくれ終わるころに
     }
     function goPrev() {
       if (index <= 0) return;
@@ -352,6 +372,7 @@
       leaves[index].classList.remove("is-flipped");
       turn(leaves[index]);
       update();
+      showCatch(index, 800);
     }
     next.addEventListener("click", goNext);
     prev.addEventListener("click", goPrev);
@@ -363,6 +384,87 @@
       if (event.clientX >= rect.left + rect.width / 2) goNext();
       else goPrev();
     });
+
+    // 作品を指定して、ページをめくりながら、その作品まで移る（間のページも、順にめくれる）
+    function goTo(target) {
+      if (target === index || target < 0 || target >= n) return;
+      var from = index;
+      var count = Math.abs(target - from);
+      for (var s = 0; s < count; s++) {
+        (function (s) {
+          window.setTimeout(function () {
+            var leaf = target > from ? leaves[from + s] : leaves[from - 1 - s];
+            leaf.classList.toggle("is-flipped", target > from);
+            turn(leaf);
+          }, s * 180);
+        })(s);
+      }
+      index = target;
+      update();
+      showCatch(index, 800 + (count - 1) * 180);
+    }
+
+    // 作品一覧（作品名とジャンルだけ）。PC の広い画面では左に出しっぱなし。狭い画面では、左から引き出す
+    var list = el("nav", "novel-list");
+    list.setAttribute("aria-label", "作品一覧");
+    var listHead = el("div", "novel-list-head");
+    listHead.appendChild(el("p", "novel-list-title"));
+    listHead.firstChild.textContent = "作品一覧";
+    var closeButton = el("button", "novel-list-close");
+    closeButton.type = "button";
+    closeButton.setAttribute("aria-label", "作品一覧を閉じる");
+    closeButton.textContent = "×";
+    listHead.appendChild(closeButton);
+    list.appendChild(listHead);
+
+    var items = el("ol", "novel-list-items");
+    var listButtons = data.map(function (item, i) {
+      var li = el("li");
+      var button = el("button", "novel-list-item");
+      button.type = "button";
+      var name = el("span", "novel-list-name");
+      name.textContent = item.title;
+      var genre = el("span", "novel-list-genre");
+      genre.textContent = item.genre;
+      button.appendChild(name);
+      button.appendChild(genre);
+      button.addEventListener("click", function () {
+        goTo(i);
+        setListOpen(false);
+      });
+      li.appendChild(button);
+      items.appendChild(li);
+      return button;
+    });
+    list.appendChild(items);
+
+    var toggle = el("button", "novel-list-toggle");
+    toggle.type = "button";
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.textContent = "作品一覧";
+    var backdrop = el("div", "novel-list-backdrop");
+
+    function setListOpen(open) {
+      list.classList.toggle("is-open", open);
+      backdrop.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+    toggle.addEventListener("click", function () {
+      setListOpen(true);
+    });
+    closeButton.addEventListener("click", function () {
+      setListOpen(false);
+    });
+    backdrop.addEventListener("click", function () {
+      setListOpen(false);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") setListOpen(false);
+    });
+
+    viewer.appendChild(list);
+    viewer.appendChild(toggle);
+    viewer.appendChild(backdrop);
 
     controls.hidden = false;
     update();
