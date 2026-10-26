@@ -524,8 +524,45 @@
     next.addEventListener("click", goNext);
     prev.addEventListener("click", goPrev);
 
+    // 本を左右になぞる（スワイプ）と、ページがめくれる（右から左へ＝次、左から右へ＝前）
+    // pointer ではなく touch で見る（斜めになぞって、スクロールが始まっても、指を離したときに判定できる）
+    var swipeX = null;
+    var swipeY = null;
+    var swipedAt = 0;
+    book.addEventListener(
+      "touchstart",
+      function (event) {
+        if (event.touches.length !== 1) {
+          swipeX = null;
+          return;
+        }
+        swipeX = event.touches[0].clientX;
+        swipeY = event.touches[0].clientY;
+      },
+      { passive: true }
+    );
+    book.addEventListener(
+      "touchend",
+      function (event) {
+        if (swipeX === null || !event.changedTouches.length) return;
+        var dx = event.changedTouches[0].clientX - swipeX;
+        var dy = event.changedTouches[0].clientY - swipeY;
+        swipeX = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          swipedAt = Date.now(); // このあとに来るクリックは、タップとして数えない
+          if (dx < 0) goNext();
+          else goPrev();
+        }
+      },
+      { passive: true }
+    );
+    book.addEventListener("touchcancel", function () {
+      swipeX = null;
+    });
+
     // 本をタップ（クリック）すると、ページがめくれる（右のページ＝次、左のページ＝前）
     book.addEventListener("click", function (event) {
+      if (Date.now() - swipedAt < 500) return;
       if (event.target.closest("a, button")) return;
       var rect = book.getBoundingClientRect();
       if (event.clientX >= rect.left + rect.width / 2) goNext();
