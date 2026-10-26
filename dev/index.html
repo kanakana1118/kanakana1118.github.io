@@ -24,54 +24,63 @@
 
   <main class="fall">
     <h1>Develop</h1>
-    <p class="lead">作ったものの概要です。スクリーンショットと、担当した役割を載せています。</p>
+    <p class="lead">開発したアプリケーションを一覧形式で記載。チームで開発したもののみ、担当した役割を載せています。<br>主にバイブコーディングで開発しています。</p>
 
+    <!-- 役割（<dt>役割</dt><dd>…</dd>）は、チームで開発したものだけに、使用技術の前に足す。個人で作ったものには付けない。
+         「公開ページ」は、公開しているものだけに付ける（公開していなければ、行ごと書かない）。「GitHub」は、リポジトリを公開しているものだけに付ける。
+         左のスクリーンショットは、Illust の Pick Up と同じスライダー。1枚だけのときは、操作のボタン（.carousel-controls）を付けない -->
     <div class="dev-list">
       <article class="dev-item">
         <div class="dev-shot">
-          <div class="placeholder">【仮】スクリーンショット</div>
+          <div class="carousel" aria-label="叶奏の備忘録のスクリーンショット">
+            <div class="carousel-track" tabindex="0">
+              <div class="card slide">
+                <img src="../images/dev/homepage-1.webp" width="1600" height="780" alt="このサイトのトップ画面。青い髪の人物のイラストの上に、5色の玉と説明文が並んでいる">
+              </div>
+              <div class="card slide">
+                <img src="../images/dev/homepage-2.webp" width="1600" height="779" alt="このサイトの Novel ページ。開いた本と、作品一覧が並んでいる">
+              </div>
+            </div>
+          <div class="carousel-controls">
+            <button class="round-btn" type="button" data-prev aria-label="前のスクリーンショット">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+            </button>
+            <div class="carousel-dots" aria-hidden="true"></div>
+            <button class="round-btn" type="button" data-next aria-label="次のスクリーンショット">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+          </div>
         </div>
         <div class="dev-text">
-          <p class="dev-label">// 01</p>
-          <h3>このサイト</h3>
-          <p>イラスト・小説・開発をまとめた個人ホームページです。</p>
+          <h3>叶奏の備忘録</h3>
+          <p>叶奏の個人HP。<br>細かい内容や工夫点等についてはすでに味わってきていると思われるため、省略します。<br>これまでに感じた全てがこのHPです。</p>
           <dl class="meta">
-            <dt>役割</dt><dd>【仮】</dd>
             <dt>使用技術</dt><dd>HTML / CSS / JavaScript / GitHub Pages</dd>
-            <dt>リンク</dt><dd><a href="../index.html">トップへ</a></dd>
+            <dt>公開ページ</dt><dd><a href="https://kanakana1118.github.io/">https://kanakana1118.github.io/</a></dd>
+            <dt>GitHub</dt><dd><a href="https://github.com/kanakana1118/kanakana1118.github.io" target="_blank" rel="noopener">kanakana1118/kanakana1118.github.io</a></dd>
           </dl>
         </div>
       </article>
 
       <article class="dev-item">
         <div class="dev-shot">
-          <div class="placeholder">【仮】スクリーンショット</div>
+          <div class="carousel">
+            <div class="carousel-track">
+              <div class="card slide">
+                <div class="placeholder">【仮】スクリーンショット</div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="dev-text">
-          <p class="dev-label">// 02</p>
           <h3>【仮】制作物の名前</h3>
           <p>【仮】概要</p>
           <dl class="meta">
-            <dt>役割</dt><dd>【仮】</dd>
             <dt>使用技術</dt><dd>【仮】</dd>
-            <dt>リンク</dt><dd>【仮】</dd>
+            <dt>公開ページ</dt><dd>【仮】公開していれば</dd>
+            <dt>GitHub</dt><dd>【仮】公開していれば</dd>
             <dt>創作との関わり</dt><dd>【仮】あれば <a href="../crossover/index.html">Crossover</a> へ</dd>
-          </dl>
-        </div>
-      </article>
-
-      <article class="dev-item">
-        <div class="dev-shot">
-          <div class="placeholder">【仮】スクリーンショット</div>
-        </div>
-        <div class="dev-text">
-          <p class="dev-label">// 03</p>
-          <h3>【仮】制作物の名前</h3>
-          <p>【仮】概要</p>
-          <dl class="meta">
-            <dt>役割</dt><dd>【仮】</dd>
-            <dt>使用技術</dt><dd>【仮】</dd>
-            <dt>リンク</dt><dd>【仮】</dd>
           </dl>
         </div>
       </article>

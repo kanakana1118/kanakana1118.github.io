@@ -373,7 +373,7 @@
     } else if (page === "dev") {
       heading = "作品一覧";
       Array.prototype.forEach.call(document.querySelectorAll(".dev-item"), function (item) {
-        add(text(item.querySelector("h3")), text(item.querySelector(".dev-label")), 0, item);
+        add(text(item.querySelector("h3")), "", 0, item);
       });
     } else if (page === "crossover") {
       heading = "作品一覧";
@@ -420,6 +420,9 @@
     var controls = viewer.querySelector(".novel-controls");
     var n = works.length;
     if (!controls || n === 0) return;
+    var ids = works.map(function (work) {
+      return work.id; // JSが本を組み立てると、作品の要素は外れるので、先に控えておく
+    });
 
     var data = works.map(function (work, i) {
       return {
@@ -635,6 +638,19 @@
     );
     controls.hidden = false;
     update();
+
+    // URLの #id で作品が指定されていれば（About の公募歴などから）、表紙が開いたあと、ページをめくってその作品まで移る
+    function idIndex() {
+      return ids.indexOf(decodeURIComponent(window.location.hash.slice(1)));
+    }
+    if (idIndex() > 0) {
+      window.setTimeout(function () {
+        goTo(idIndex());
+      }, 1600);
+    }
+    window.addEventListener("hashchange", function () {
+      if (idIndex() >= 0) goTo(idIndex());
+    });
   }
 
   // ---- Develop: 大小の四角が上から順に消えて、中身が現れる ----
@@ -736,4 +752,5 @@
   initPageToc();
 
   initReveal();
+
 })();

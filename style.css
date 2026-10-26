@@ -231,6 +231,7 @@ h2 {
 
 .meta dd {
   margin: 0 0 4px 8em;
+  overflow-wrap: anywhere; /* 長いURLは、箱からはみ出さず、折り返す */
 }
 
 /* タグ */
@@ -1745,20 +1746,13 @@ section[id],
 }
 
 /* ===== Develop ===== */
-.dev-label {
-  margin: 0 0 4px;
-  color: var(--accent);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-}
-
 .dev-list {
   display: grid;
   gap: 56px;
   margin-top: 32px;
 }
 
-/* スクリーンショット（左）と、その隣の説明の箱（右）。すべての項目で、左がスクリーンショット */
+/* 左: スクリーンショット（Illust の Pick Up と同じ循環スライダー）。右: 説明の箱。すべての項目で、左がスクリーンショット */
 .dev-item {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
@@ -1767,6 +1761,21 @@ section[id],
 }
 
 .dev-shot,
+.dev-text {
+  position: relative;
+  overflow: hidden;
+}
+
+.dev-shot .carousel {
+  --slide-w: min(70vw, 360px);
+  padding-top: 0;
+}
+
+.dev-shot .slide .placeholder {
+  aspect-ratio: 16 / 9;
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
 .dev-text {
   position: relative;
   overflow: hidden;
@@ -1910,6 +1919,17 @@ section[id],
 
 .event-list .meta dd {
   margin-left: 4.5em;
+}
+
+.contest-list li {
+  display: grid;
+  grid-template-columns: 4.5em minmax(0, 1fr);
+}
+
+.contest-list .year {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
 }
 
 .field {
