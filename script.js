@@ -764,6 +764,9 @@
     dialog.appendChild(tabs);
     document.body.appendChild(dialog);
 
+    var BAR_SPACE = 44; // 動画の下の操作バーの高さ + すきま(px)
+    var ICON_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>';
+    var ICON_PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
     var image = null;
     var videoSrc = "";
     var video = null;
@@ -780,32 +783,68 @@
       stopVideo();
       view.textContent = "";
       if (kind === "video") {
+        // ブラウザ標準の操作は使わない（スマホの Safari は、再生中も半透明の停止ボタンを出し、押すと止まってしまうため）
         video = el("video", "lightbox-media");
-        video.controls = true;
         video.setAttribute("playsinline", "");
         video.preload = "none"; // 再生ボタンを押すまで、読み込まない
         video.poster = image.src; // 動画の大きさが分かるまで、イラストを表示しておく（大きさも、これで決まる）
         video.src = videoSrc;
         if (shown && shown.width) {
           video.style.width = shown.width + "px";
-          video.style.height = shown.height + "px";
+          video.style.height = Math.max(shown.height - BAR_SPACE, 120) + "px"; // 下の操作バーの分、低くする
         }
-        var box = el("div", "lightbox-videobox");
-        var mark = el("span", "lightbox-play"); // 止まっているあいだ、中央に出す再生の印
-        mark.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>';
-        box.appendChild(video);
-        box.appendChild(mark);
-        view.appendChild(box);
-        var tap = el("div", "lightbox-tap"); // 動画の上に重ねた透明な面。下の操作バーは、空けておく（ブラウザの標準の操作）
-        box.appendChild(tap);
         var current = video;
-        function sync() {
-          mark.hidden = !current.paused;
-        }
-        current.addEventListener("play", sync);
-        current.addEventListener("pause", sync);
-        current.addEventListener("ended", sync);
-        tap.addEventListener("click", function () {
+        var box = el("div", "lightbox-videobox");
+        var stage = el("div", "lightbox-stage");
+        var tap = el("button", "lightbox-tap"); // 動画の上に重ねた透明な面。押すと、再生・停止
+        tap.type = "button";
+        tap.setAttribute("aria-label", "再生・停止");
+        var mark = el("span", "lightbox-play"); // 止まっているあいだ、中央に出す再生の印
+        mark.innerHTML = ICON_PLAY;
+        stage.appendChild(video);
+        stage.appendChild(tap);
+        stage.appendChild(mark);
+
+        var bar = el("div", "lightbox-bar");
+        var toggle = el("button", "round-btn lightbox-toggle");
+        toggle.type = "button";
+        var seek = el("input", "lightbox-seek");
+        seek.type = "range";
+        seek.min = "0";
+        seek.max = "1000";
+        seek.value = "0";
+        seek.disabled = true; // 読み込みが始まるまで（長さが分かるまで）は、動かせない
+        seek.setAttribute("aria-label", "再生位置");
+        var time = el("span", "lightbox-time");
+        bar.appendChild(toggle);
+        bar.appendChild(seek);
+        bar.appendChild(time);
+        box.appendChild(stage);
+        box.appendChild(bar);
+        view.appendChild(box);
+
+        var clock = function (sec) {
+          sec = Math.max(0, Math.floor(sec || 0));
+          return Math.floor(sec / 60) + ":" + ("0" + (sec % 60)).slice(-2);
+        };
+        var sync = function () {
+          var playing = !current.paused;
+          mark.hidden = playing;
+          toggle.innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
+          toggle.setAttribute("aria-label", playing ? "停止" : "再生");
+        };
+        var progress = function () {
+          var dur = current.duration;
+          if (dur && isFinite(dur)) {
+            seek.disabled = false;
+            if (!seeking) seek.value = String(Math.round((current.currentTime / dur) * 1000));
+            time.textContent = clock(current.currentTime) + " / " + clock(dur);
+          } else {
+            time.textContent = "0:00";
+          }
+        };
+        var seeking = false;
+        var flip = function () {
           // スマホでは、押した操作の中で、直接 play() を呼ばないと再生できない
           if (current.paused) {
             var started = current.play();
@@ -813,8 +852,24 @@
           } else {
             current.pause();
           }
+        };
+        current.addEventListener("play", sync);
+        current.addEventListener("pause", sync);
+        current.addEventListener("ended", sync);
+        current.addEventListener("timeupdate", progress);
+        current.addEventListener("loadedmetadata", progress);
+        tap.addEventListener("click", flip);
+        toggle.addEventListener("click", flip);
+        seek.addEventListener("input", function () {
+          seeking = true;
+          var dur = current.duration;
+          if (dur && isFinite(dur)) current.currentTime = (seek.value / 1000) * dur;
+        });
+        seek.addEventListener("change", function () {
+          seeking = false;
         });
         sync();
+        progress();
       } else {
         view.appendChild(image);
       }

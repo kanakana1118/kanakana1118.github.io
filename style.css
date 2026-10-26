@@ -1150,14 +1150,67 @@ html.is-lightbox {
 }
 
 .lightbox-videobox {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.lightbox-stage {
   position: relative;
   line-height: 0;
 }
 
 .lightbox-tap {
   position: absolute;
-  inset: 0 0 48px; /* 下の48pxは、操作バー（ブラウザの標準）に空けておく */
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 動画の下の操作バー（再生・停止、再生位置、時間）。ブラウザ標準の操作は使わない */
+.lightbox-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 36px;
+  margin-top: 8px;
+}
+
+.lightbox-toggle {
+  flex: none;
+  width: 36px;
+  height: 36px;
+}
+
+.lightbox-toggle svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  stroke: none;
+}
+
+.lightbox-seek {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  margin: 0;
+  background: transparent;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.lightbox-seek:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.lightbox-time {
+  flex: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .lightbox-play {
