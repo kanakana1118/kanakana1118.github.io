@@ -623,6 +623,7 @@ body[data-page="top"] .to-top {
   --shade: 6 12 36;
   --shade-h: 55%;
   --shade-a: 0.78;
+  --fade-from: 82%; /* イラストの下端を、ページの背景になじませ始める高さ（グラデーションの何%から。大きいほど、消える範囲が狭い） */
   position: absolute;
   right: 0;
   bottom: 0;
@@ -632,7 +633,8 @@ body[data-page="top"] .to-top {
     to bottom,
     rgb(var(--shade) / 0),
     rgb(var(--shade) / calc(var(--shade-a) * 0.5)) 45%,
-    rgb(var(--shade) / var(--shade-a))
+    rgb(var(--shade) / var(--shade-a)) var(--fade-from),
+    var(--bg) /* 一番下は、ページの背景色になじませる（イラストの下端の境目を消す） */
   );
   pointer-events: none;
 }
@@ -655,18 +657,17 @@ body[data-page="top"] .to-top {
 }
 
 /* 玉・名前・説明文は、イラストの上に重ねる。イラストに対して位置を固定し、イラストと一緒にスクロールする。
-   --menu-y: かたまり全体の中心を、イラストの下端から何%の高さに置くか（30% = 下から30%） */
+   --menu-top: 玉の上端を、イラストの上端から何%の高さに置くか（今は 57.5%。PC 向け。スマホは下の @media で別に決める） */
 .menu-ui {
-  --menu-y: 30%;
+  --menu-top: 57.5%; /* 玉の上端の位置（イラストの上端から、イラストの高さの何%か）。説明文が長くなっても、玉は動かない */
   position: absolute;
+  top: var(--menu-top);
   right: 0;
-  bottom: var(--menu-y);
   left: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 0 16px;
-  transform: translateY(50%);
   pointer-events: none;
 }
 
@@ -688,6 +689,158 @@ body[data-page="top"] .to-top {
   text-shadow: 0 0 10px var(--bg-deep), 0 0 3px var(--bg-deep);
 }
 
+/* 説明文の1行目（3つの分野） */
+.menu-lead-tag {
+  display: block;
+  margin-bottom: 0.65em; /* 下の文との間（この行の文字の大きさに合わせる） */
+  font-size: clamp(1.1rem, 2.6vw, 2.3rem); /* 画面の幅に合わせる。説明文の幅（30em）に収まる大きさまで */
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .menu-lead-tag {
+    font-size: clamp(0.9rem, 5.2vw, 1.6rem);
+  }
+}
+
+.menu-lead--body {
+  margin-top: 14px;
+}
+
+/* 各ページの概要。説明文の下に、1行ずつ並べる。玉は、左・右・左…と、互い違いに置き、その反対側に、1〜2文の説明を書く。
+   縦の位置は、script.js が、説明文の下端にそろえる */
+.menu-guide {
+  --orb: clamp(72px, 8vw, 104px);
+  --orb-glow: calc(var(--orb) * 0.36);
+  --orb-float: calc(var(--orb) * 0.07);
+  position: relative;
+  z-index: 1;
+  display: none;
+  flex-direction: column;
+  gap: 28px;
+  box-sizing: border-box;
+  width: min(100% - 32px, 720px);
+  margin: 0 auto;
+  padding-bottom: 88px; /* 下端のコピーライトの分 */
+}
+
+.stage.is-menu > .menu-guide {
+  display: flex;
+}
+
+.guide-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 4vw, 44px);
+}
+
+/* 2つ目、4つ目は、玉が右 */
+.guide-row:nth-child(even) {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.guide-row:nth-child(even) .guide-text p {
+  margin-left: auto;
+}
+
+.guide-row .orb {
+  position: relative;
+  flex: none;
+  transform: none;
+  display: block;
+}
+
+.guide-text {
+  display: block;
+  min-width: 0;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.guide-text h2 {
+  display: block;
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+  color: var(--c);
+  font-size: 1.5rem;
+  letter-spacing: 0.08em;
+}
+
+.guide-text p {
+  max-width: 26em;
+  margin: 0;
+  font-size: 1.1rem;
+  text-wrap: balance;
+  line-break: strict;
+  line-height: 1.8;
+  text-shadow: 0 0 10px var(--bg-deep), 0 0 3px var(--bg-deep);
+}
+
+.guide-text .ph {
+  display: inline-block;
+}
+
+.guide-text:hover h2,
+.guide-text:focus-visible h2 {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.guide--about {
+  --c: var(--c-red);
+}
+
+.guide--illust {
+  --c: var(--c-orange);
+}
+
+.guide--novel {
+  --c: var(--c-yellow);
+}
+
+.guide--develop {
+  --c: var(--c-green);
+}
+
+.guide--crossover {
+  --c: var(--c-blue);
+}
+
+.guide-row:nth-child(2) .orb {
+  animation-delay: -0.8s;
+}
+
+.guide-row:nth-child(3) .orb {
+  animation-delay: -1.6s;
+}
+
+.guide-row:nth-child(4) .orb {
+  animation-delay: -2.4s;
+}
+
+.guide-row:nth-child(5) .orb {
+  animation-delay: -3.2s;
+}
+
+@media (max-width: 640px) {
+  .menu-guide {
+    --orb: 64px;
+    gap: 22px;
+  }
+
+  .guide-text h2 {
+    font-size: 1.3rem;
+  }
+
+  .guide-text p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+}
+
 /* ===== 水晶玉 =====
    玉の見た目を変えるときは、ここの変数をいじる。
    --orb               玉の直径
@@ -703,10 +856,9 @@ body[data-page="top"] .to-top {
    --orb-float         ふわふわ浮く距離
    玉の色は、先頭の :root の --c-red などで変える（ページの差し色と共通）。
    位置は、下の .orb--about などの left / top（%）で変える。 */
-.orbs {
-  /* 玉の大きさは、画面の幅に合わせて変わる（小さい画面で60px、大きい画面で最大110px） */
-  --orb: clamp(60px, 6.5vw, 110px);
-  --orb-glow: calc(var(--orb) * 0.36);
+/* 玉の質感の変数。上のメニューの玉（.orbs）と、各ページの概要の玉（.menu-guide）で共通 */
+.orbs,
+.menu-guide {
   --orb-glow-strength: 55%;
   --orb-shade: 0.65;
   --orb-hl-x: 35.5%;
@@ -716,6 +868,12 @@ body[data-page="top"] .to-top {
   --orb-sheen: 0.2;
   --orb-sheen-angle: 135deg;
   --orb-sheen-reach: 35%;
+}
+
+.orbs {
+  /* 玉の大きさは、画面の幅に合わせて変わる（小さい画面で60px、大きい画面で最大110px） */
+  --orb: clamp(60px, 6.5vw, 110px);
+  --orb-glow: calc(var(--orb) * 0.36);
   --orb-float: calc(var(--orb) * 0.07);
   position: relative;
   width: min(100%, 760px);
@@ -1600,20 +1758,12 @@ section[id],
   margin-top: 32px;
 }
 
-/* スクリーンショットと、その隣の説明の箱。PCでは、1つおきに左右を入れ替える */
+/* スクリーンショット（左）と、その隣の説明の箱（右）。すべての項目で、左がスクリーンショット */
 .dev-item {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   gap: 32px;
   align-items: center;
-}
-
-.dev-item:nth-child(even) {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-}
-
-.dev-item:nth-child(even) .dev-text {
-  order: -1;
 }
 
 .dev-shot,
@@ -1744,6 +1894,24 @@ section[id],
   border-radius: 8px;
 }
 
+.profile p {
+  margin: 0 0 14px;
+}
+
+/* イベントのカードは、縦に1列で並べる */
+.event-list {
+  display: grid;
+  gap: 24px;
+}
+
+.event-list .meta dt {
+  width: 4.5em;
+}
+
+.event-list .meta dd {
+  margin-left: 4.5em;
+}
+
 .field {
   margin: 0;
   padding: 8px 0;
@@ -1854,17 +2022,13 @@ footer {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .dev-item,
-  .dev-item:nth-child(even) {
+  .dev-item {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .dev-item:nth-child(even) .dev-text {
-    order: 0;
   }
 
   .portrait {
     max-width: 260px;
+    margin: 0 auto; /* スマホでは、イラストを中央に置く */
   }
 }
 

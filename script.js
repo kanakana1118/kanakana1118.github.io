@@ -31,6 +31,37 @@
     update();
   }
 
+  // ---- Top: 各ページの概要を、説明文の下端にそろえる ----
+  // 説明文（.menu-ui）はイラストに対して位置が決まっていて、イラストの下端より下にはみ出したり、手前に余ったりする。
+  // どちらの場合も、説明文の下端から GAP だけ下に、概要が始まるように、上の余白を決める。
+  function initGuide(stage) {
+    var GAP = 36;
+    var guide = stage.querySelector(".menu-guide");
+    var ui = stage.querySelector(".menu-ui");
+    var art = stage.querySelector(".menu-art img");
+    if (!guide || !ui || !art) return;
+
+    function fit() {
+      if (!stage.classList.contains("is-menu")) return;
+      var overflow = ui.getBoundingClientRect().bottom - art.getBoundingClientRect().bottom; // 負なら、イラストの中に余っている
+      var margin = Math.round(overflow + GAP);
+      guide.style.marginTop = margin + "px";
+      // 手前に引き上げた分だけ、全体の高さが縮まらないようにする（イラストの下端まで、画面を保つ）
+      guide.style.minHeight = Math.max(0, -margin) + "px";
+    }
+
+    if (window.ResizeObserver) {
+      var observer = new ResizeObserver(fit);
+      observer.observe(ui);
+      observer.observe(art);
+    }
+    new MutationObserver(fit).observe(stage, { attributes: true, attributeFilter: ["class"] });
+    window.addEventListener("resize", fit);
+    window.addEventListener("load", fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+    fit();
+  }
+
   // ---- Top: 動画 → 暗転（点滅）→ メニュー ----
   function initIntro(stage) {
     var BLACKOUT_MS = 900; // style.css の flicker の長さと合わせる
@@ -692,7 +723,10 @@
   initToTop();
 
   var stage = document.querySelector(".stage");
-  if (stage) initIntro(stage);
+  if (stage) {
+    initIntro(stage);
+    initGuide(stage);
+  }
 
   Array.prototype.forEach.call(document.querySelectorAll(".carousel"), initCarousel);
 

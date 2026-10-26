@@ -20,6 +20,12 @@
   visibility: visible;
 }
 
+/* Top: メニューが直接見えるので、各ページの概要も出す（位置をそろえる JS が無いので、余白を多めに取る） */
+.stage > .menu-guide {
+  display: flex;
+  margin-top: 140px;
+}
+
 /* Top: メニューが直接見えるので、コピーライトも出す */
 .stage > footer {
   display: block;
