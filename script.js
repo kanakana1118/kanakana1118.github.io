@@ -736,6 +736,133 @@
     });
   }
 
+  // ---- Illust: Gallery の作品を押すと、大きい画像のポップアップ（タイムラプスがある作品は、切り替えられる） ----
+  function initGallery() {
+    var figures = Array.prototype.slice.call(document.querySelectorAll("#gallery figure"));
+    if (!figures.length || typeof HTMLDialogElement === "undefined") return; // 非対応なら、画像のページへ移るリンクのまま
+
+    var dialog = el("dialog", "lightbox");
+    dialog.setAttribute("aria-label", "作品の拡大");
+    var close = el("button", "lightbox-close");
+    close.type = "button";
+    close.setAttribute("aria-label", "閉じる");
+    close.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'; // 文字の×は、字体で位置がずれるので、線で描く
+    var view = el("div", "lightbox-view");
+    var title = el("p", "lightbox-title");
+    var tabs = el("div", "lightbox-tabs");
+    tabs.hidden = true;
+    var tabImage = el("button", "lightbox-tab");
+    var tabVideo = el("button", "lightbox-tab");
+    tabImage.type = tabVideo.type = "button";
+    tabImage.textContent = "イラスト";
+    tabVideo.textContent = "タイムラプス";
+    tabs.appendChild(tabImage);
+    tabs.appendChild(tabVideo);
+    dialog.appendChild(close);
+    dialog.appendChild(view);
+    dialog.appendChild(title);
+    dialog.appendChild(tabs);
+    document.body.appendChild(dialog);
+
+    var image = null;
+    var videoSrc = "";
+    var video = null;
+
+    function stopVideo() {
+      if (!video) return;
+      video.pause();
+      video.removeAttribute("src");
+      video.load(); // 通信を止める
+      video = null;
+    }
+    function show(kind) {
+      var shown = view.firstChild ? view.firstChild.getBoundingClientRect() : null; // 切り替えても、枠の大きさが変わらないように
+      stopVideo();
+      view.textContent = "";
+      if (kind === "video") {
+        video = el("video", "lightbox-media");
+        video.controls = true;
+        video.setAttribute("playsinline", "");
+        video.preload = "none"; // 再生ボタンを押すまで、読み込まない
+        video.poster = image.src; // 動画の大きさが分かるまで、イラストを表示しておく（大きさも、これで決まる）
+        video.src = videoSrc;
+        if (shown && shown.width) {
+          video.style.width = shown.width + "px";
+          video.style.height = shown.height + "px";
+        }
+        var box = el("div", "lightbox-videobox");
+        var mark = el("span", "lightbox-play"); // 止まっているあいだ、中央に出す再生の印
+        mark.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>';
+        box.appendChild(video);
+        box.appendChild(mark);
+        view.appendChild(box);
+        var tap = el("div", "lightbox-tap"); // 動画の上に重ねた透明な面。下の操作バーは、空けておく（ブラウザの標準の操作）
+        box.appendChild(tap);
+        var current = video;
+        function sync() {
+          mark.hidden = !current.paused;
+        }
+        current.addEventListener("play", sync);
+        current.addEventListener("pause", sync);
+        current.addEventListener("ended", sync);
+        tap.addEventListener("click", function () {
+          // スマホでは、押した操作の中で、直接 play() を呼ばないと再生できない
+          if (current.paused) {
+            var started = current.play();
+            if (started && started.catch) started.catch(function () {});
+          } else {
+            current.pause();
+          }
+        });
+        sync();
+      } else {
+        view.appendChild(image);
+      }
+      tabImage.setAttribute("aria-pressed", String(kind !== "video"));
+      tabVideo.setAttribute("aria-pressed", String(kind === "video"));
+    }
+    function open(figure) {
+      var link = figure.querySelector("a");
+      var thumb = figure.querySelector("img");
+      var caption = figure.querySelector("figcaption");
+      image = el("img", "lightbox-media");
+      image.src = link.getAttribute("href");
+      image.alt = thumb ? thumb.alt : "";
+      videoSrc = figure.getAttribute("data-video") || "";
+      tabs.hidden = !videoSrc;
+      title.textContent = caption ? caption.textContent.trim() : "";
+      show("image");
+      document.documentElement.classList.add("is-lightbox"); // 後ろのページを、動かないようにする
+      dialog.showModal();
+    }
+
+    figures.forEach(function (figure) {
+      var link = figure.querySelector("a");
+      if (!link) return;
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        open(figure);
+      });
+    });
+    tabImage.addEventListener("click", function () {
+      show("image");
+    });
+    tabVideo.addEventListener("click", function () {
+      show("video");
+    });
+    close.addEventListener("click", function () {
+      dialog.close();
+    });
+    dialog.addEventListener("click", function (event) {
+      if (event.target === dialog) dialog.close(); // 枠の外（暗い背景）を押したとき
+    });
+    dialog.addEventListener("close", function () {
+      stopVideo();
+      view.textContent = "";
+      document.documentElement.classList.remove("is-lightbox");
+    });
+  }
+
   initToTop();
 
   var stage = document.querySelector(".stage");
@@ -745,6 +872,8 @@
   }
 
   Array.prototype.forEach.call(document.querySelectorAll(".carousel"), initCarousel);
+
+  initGallery();
 
   var viewer = document.querySelector(".novel-viewer");
   if (viewer) initNovels(viewer);

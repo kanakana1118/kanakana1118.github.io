@@ -73,17 +73,20 @@
 
     <section id="gallery">
       <h2>Gallery</h2>
+      <!-- 画像を押すと、大きい画像のポップアップが開く（JSが無いときは、画像のページへ移る）。
+           タイムラプスがある作品だけ、<figure data-video="../videos/illust/名前.mp4"> を付ける（ポップアップに「タイムラプス」の切り替えが出る。再生は、再生ボタンを押したときだけ）。
+           動画は、1本8MB以下・音声なし・メタデータを消したものを、videos/illust/ に置く -->
       <div class="gallery">
-        <figure>
-          <img src="../images/illust/topaz-earrings.webp" width="1200" height="1600" alt="青い髪の人物が、光る水の粒とトパーズの耳飾りの向こうで、手を差し出しているイラスト" loading="lazy">
+        <figure data-video="../videos/illust/topaz-earrings.mp4">
+          <a class="gallery-link" href="../images/illust/topaz-earrings.webp"><img src="../images/illust/topaz-earrings.webp" width="1200" height="1600" alt="青い髪の人物が、光る水の粒とトパーズの耳飾りの向こうで、手を差し出しているイラスト" loading="lazy"></a>
           <figcaption>水とトパーズの耳飾り</figcaption>
         </figure>
-        <figure>
-          <img src="../images/illust/untitled.webp" width="1600" height="900" alt="赤黒い液体がしたたる中で、二人の人物が寄り添っているイラスト" loading="lazy">
+        <figure data-video="../videos/illust/untitled.mp4">
+          <a class="gallery-link" href="../images/illust/untitled.webp"><img src="../images/illust/untitled.webp" width="1600" height="900" alt="赤黒い液体がしたたる中で、二人の人物が寄り添っているイラスト" loading="lazy"></a>
           <figcaption>無題</figcaption>
         </figure>
         <figure>
-          <img src="../images/illust/white-dwarf.webp" width="1083" height="1600" alt="白い髪の人物の目に、十字の線が走っている、透明水彩のイラスト" loading="lazy">
+          <a class="gallery-link" href="../images/illust/white-dwarf.webp"><img src="../images/illust/white-dwarf.webp" width="1083" height="1600" alt="白い髪の人物の目に、十字の線が走っている、透明水彩のイラスト" loading="lazy"></a>
           <figcaption>白色矮星</figcaption>
         </figure>
       </div>

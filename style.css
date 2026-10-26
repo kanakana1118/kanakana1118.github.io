@@ -1067,6 +1067,165 @@ body[data-page="top"] .to-top {
   color: var(--muted);
 }
 
+/* 一覧の画像は、押すと拡大する */
+.gallery-link {
+  display: block;
+  border-radius: 8px;
+}
+
+.gallery-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* 拡大のポップアップ（JSが <dialog> を作る）。タイムラプスがある作品だけ、下に切り替えが出る */
+.lightbox {
+  width: fit-content;
+  min-width: min(92vw, 360px);
+  max-width: 92vw;
+  max-height: 92vh;
+  margin: auto;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  overflow: auto;
+  text-align: center;
+}
+
+.lightbox::backdrop {
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+}
+
+html.is-lightbox {
+  overflow: hidden;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.lightbox-close svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.lightbox-close:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.lightbox-view {
+  display: grid;
+  place-items: center;
+}
+
+.lightbox-media {
+  display: block;
+  max-width: 100%;
+  max-height: calc(92vh - 150px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--card-bg);
+}
+
+.lightbox-videobox {
+  position: relative;
+  line-height: 0;
+}
+
+.lightbox-tap {
+  position: absolute;
+  inset: 0 0 48px; /* 下の48pxは、操作バー（ブラウザの標準）に空けておく */
+  cursor: pointer;
+}
+
+.lightbox-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  color: var(--accent);
+  pointer-events: none; /* 押した操作は、下の動画に届かせる */
+}
+
+.lightbox-play[hidden] {
+  display: none;
+}
+
+.lightbox-play svg {
+  width: 28px;
+  height: 28px;
+  margin-left: 3px; /* 三角は、見た目の中心が右に寄るので、少し戻す */
+  fill: currentColor;
+}
+
+.lightbox-title {
+  margin: 12px 0 0;
+}
+
+.lightbox-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.lightbox-tab {
+  padding: 4px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.lightbox-tab[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lightbox[open] {
+    animation: lightbox-in 0.2s ease-out;
+  }
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
 @media (min-width: 720px) {
   .gallery {
     grid-template-columns: repeat(3, minmax(0, 1fr));
