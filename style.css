@@ -177,6 +177,15 @@ h2 {
   gap: 8px 16px;
 }
 
+/* 準備中のページの印 */
+.coming-soon {
+  margin: 48px 0;
+  color: var(--accent);
+  font-size: 1.25rem;
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+
 /* 画像がまだ無い場所を示す枠 */
 .placeholder {
   display: flex;
@@ -1891,7 +1900,7 @@ section[id],
   display: grid;
   grid-template-columns: minmax(180px, 300px) minmax(0, 1fr);
   gap: 40px;
-  align-items: start;
+  align-items: center; /* 文章は、イラストの縦の中央に置く */
   padding-top: 16px;
 }
 
@@ -1905,6 +1914,10 @@ section[id],
 
 .profile p {
   margin: 0 0 14px;
+}
+
+.profile p:last-child {
+  margin-bottom: 0; /* 中央からずれないように */
 }
 
 /* イベントのカードは、縦に1列で並べる */
