@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 【書き換え】作品名 -->
+  <title>作品名 制作秘話 | 叶奏の備忘録</title>
+  <meta name="description" content="作品名の制作秘話。">
+  <link rel="stylesheet" href="../style.css">
+  <script src="../script.js" defer></script>
+</head>
+<!-- 【書き換え】data-page は、作品があるセクション（illust / novel / dev）。差し色が、そのセクションと同じになる -->
+<body data-page="illust">
+  <header class="site-header">
+    <a class="site-title" href="../index.html">叶奏の備忘録</a>
+    <!-- 【書き換え】aria-current="page" は、作品があるセクションのリンクに付ける -->
+    <nav>
+      <a href="../index.html">Top</a>
+      <a href="../about/index.html">About</a>
+      <a href="../illust/index.html" aria-current="page">Illust</a>
+      <a href="../novel/index.html">Novel</a>
+      <a href="../dev/index.html">Develop</a>
+      <a href="../crossover/index.html">Crossover</a>
+    </nav>
+  </header>
+
+  <main class="making">
+    <p class="making-label">制作秘話</p>
+    <h1>作品名</h1>
+    <p class="lead">導入の1〜2文（無ければ、この行ごと消す）。</p>
+
+    <!-- 見出しごとに <section id="..."> を1つ書く。id は英小文字とハイフン。2つ以上あると、左の目次が自動で出る。
+         本文は <p>。画像・動画は、下の <figure class="making-figure"> を足す -->
+    <section id="part-1">
+      <h2>見出し</h2>
+      <p>本文。</p>
+
+      <!-- 画像: images/making/作品のid/ に置く。alt に、見えているものを書く。width / height は実寸 -->
+      <figure class="making-figure">
+        <img src="../images/making/作品のid/ファイル名.webp" width="1200" height="800" alt="" loading="lazy">
+        <figcaption>キャプション（無ければ、この行ごと消す）</figcaption>
+      </figure>
+
+      <!-- 動画: videos/making/作品のid/ に置く。poster（表紙の画像）を付ける。再生は押したときだけ（preload="none"）。
+           音声が無い動画には muted を付ける（消音ボタンが出なくなる）。JS が無いときは、標準の操作で再生できる -->
+      <figure class="making-figure">
+        <video src="../videos/making/作品のid/ファイル名.mp4" poster="../images/making/作品のid/ファイル名-poster.webp" width="1280" height="720" preload="none" playsinline controls muted></video>
+        <figcaption>キャプション</figcaption>
+      </figure>
+    </section>
+
+    <!-- 作品の一覧ページに戻るリンク（Illust は ../illust/index.html#作品のid、Novel は ../novel/index.html#作品のid、Develop は ../dev/index.html#作品のid） -->
+    <p class="making-back"><a href="../illust/index.html#作品のid">&larr; Illust に戻る</a></p>
+  </main>
+
+  <footer>
+    <small>&copy; 2026 叶奏</small>
+  </footer>
+</body>
+</html>

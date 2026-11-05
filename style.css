@@ -265,6 +265,7 @@ h2 {
 .buttons {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center; /* ボタンの行は、どのページでも中央に置く */
   gap: 12px;
   margin: 16px 0 0;
 }
@@ -1149,17 +1150,17 @@ html.is-lightbox {
   background: var(--card-bg);
 }
 
-.lightbox-videobox {
+.player {
   width: fit-content;
   max-width: 100%;
 }
 
-.lightbox-stage {
+.player-stage {
   position: relative;
   line-height: 0;
 }
 
-.lightbox-tap {
+.player-tap {
   position: absolute;
   inset: 0;
   padding: 0;
@@ -1169,8 +1170,8 @@ html.is-lightbox {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* 動画の下の操作バー（再生・停止、再生位置、時間）。ブラウザ標準の操作は使わない */
-.lightbox-bar {
+/* 動画の自前の操作バー（再生・停止、再生位置、時間、消音）。Gallery のポップアップ・制作秘話・Develop の PV で共通。ブラウザ標準の操作は使わない */
+.player-bar {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1178,20 +1179,26 @@ html.is-lightbox {
   margin-top: 8px;
 }
 
-.lightbox-toggle {
+.player-btn.round-btn {
   flex: none;
   width: 36px;
   height: 36px;
 }
 
-.lightbox-toggle svg {
+.player-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* 再生・停止の印は塗りつぶし、消音の印は線 */
+.player-toggle svg {
   width: 16px;
   height: 16px;
   fill: currentColor;
   stroke: none;
 }
 
-.lightbox-seek {
+.player-seek {
   flex: 1;
   min-width: 0;
   height: 36px;
@@ -1201,19 +1208,19 @@ html.is-lightbox {
   cursor: pointer;
 }
 
-.lightbox-seek:disabled {
+.player-seek:disabled {
   opacity: 0.4;
   cursor: default;
 }
 
-.lightbox-time {
+.player-time {
   flex: none;
   color: var(--muted);
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
 }
 
-.lightbox-play {
+.player-play {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1229,11 +1236,11 @@ html.is-lightbox {
   pointer-events: none; /* 押した操作は、下の動画に届かせる */
 }
 
-.lightbox-play[hidden] {
+.player-play[hidden] {
   display: none;
 }
 
-.lightbox-play svg {
+.player-play svg {
   width: 28px;
   height: 28px;
   margin-left: 3px; /* 三角は、見た目の中心が右に寄るので、少し戻す */
@@ -1365,6 +1372,84 @@ html.is-lightbox {
 
 .carousel-dots span.is-active {
   background: var(--accent);
+}
+
+/* 制作秘話・Develop の PV の動画: 箱の幅いっぱいに。縦長でも画面の高さに収める */
+.player > .player-stage > video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  background: var(--card-bg);
+}
+
+.lightbox-making {
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+
+/* ===== 制作秘話（作品ごとのページ。<main class="making">）===== */
+.making {
+  max-width: 760px;
+}
+
+.making-label {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+}
+
+.making h1 {
+  margin: 0 0 16px;
+}
+
+.making section p {
+  margin: 0 0 1em;
+}
+
+.making-figure {
+  margin: 24px auto;
+  text-align: center;
+}
+
+.making-figure img,
+.making-figure video {
+  display: block;
+  max-width: 100%;
+  max-height: 80vh;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.making-figure .player {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.making-figure .player video {
+  margin: 0;
+}
+
+.making-figure figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.making-date {
+  margin: 40px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+.making-back {
+  margin-top: 24px;
 }
 
 /* ===== Novel ===== */
@@ -1981,6 +2066,26 @@ section[id],
   align-items: center;
 }
 
+/* PV: 項目の上、中央。YouTube の埋め込みくらいの大きさ（--pv-w、16:9）。スクリーンショットと説明の上に1段で置く */
+.dev-pv {
+  --pv-w: 640px;
+  position: relative;
+  overflow: hidden;
+  grid-column: 1 / -1;
+  width: min(100%, var(--pv-w));
+  justify-self: center;
+}
+
+.dev-pv .player {
+  width: 100%;
+}
+
+.dev-pv video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
 .dev-shot,
 .dev-text {
   position: relative;
@@ -2028,6 +2133,7 @@ section[id],
 }
 
 /* 登場演出: 最初は覆いで隠し、大小の四角（.tile）が上から順に消えて、中身が現れる */
+.dev-pv::after,
 .dev-shot::after,
 .dev-text::after {
   content: "";
@@ -2039,11 +2145,13 @@ section[id],
   animation: cover-timeout 0.01s 4s forwards;
 }
 
+.dev-pv.is-armed::after,
 .dev-shot.is-armed::after,
 .dev-text.is-armed::after {
   animation: none;
 }
 
+.dev-pv.is-tiled::after,
 .dev-shot.is-tiled::after,
 .dev-text.is-tiled::after {
   display: none;
@@ -2287,6 +2395,7 @@ footer {
     scroll-behavior: auto !important;
   }
 
+  .dev-pv::after,
   .dev-shot::after,
   .dev-text::after {
     display: none;

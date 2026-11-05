@@ -32,6 +32,7 @@
 }
 
 /* Develop: 中身を隠している覆いを外す */
+.dev-pv::after,
 .dev-shot::after,
 .dev-text::after {
   display: none;

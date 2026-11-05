@@ -359,7 +359,12 @@
     }
     var heading = "目次";
 
-    if (page === "about") {
+    if (document.querySelector("main.making")) {
+      // 制作秘話ページ: 見出し（<section id> の h2）から作る
+      Array.prototype.forEach.call(document.querySelectorAll("main.making section[id]"), function (section) {
+        add(text(section.querySelector("h2")), "", 0, section);
+      });
+    } else if (page === "about") {
       add("プロフィール", "", 0, document.getElementById("profile"));
       add("Links", "", 0, document.getElementById("links"));
       add("イベント", "", 0, document.getElementById("events"));
@@ -655,7 +660,7 @@
 
   // ---- Develop: 大小の四角が上から順に消えて、中身が現れる ----
   function initReveal() {
-    var boxes = Array.prototype.slice.call(document.querySelectorAll(".dev-shot, .dev-text"));
+    var boxes = Array.prototype.slice.call(document.querySelectorAll(".dev-pv, .dev-shot, .dev-text"));
     if (!boxes.length) return;
     if (reduceMotion || !("IntersectionObserver" in window)) {
       boxes.forEach(function (box) {
@@ -736,6 +741,132 @@
     });
   }
 
+  // ---- 動画の自前の操作バー（Gallery のポップアップ・制作秘話・Develop の PV で共通）----
+  // ブラウザ標準の操作は使わない（スマホの Safari は、再生中も半透明の停止ボタンを出し、押すと止まってしまうため）。
+  // 再生・停止、再生位置、時間。音声のある動画（muted が付いていないもの）には、消音ボタンも付ける。
+  var ICON_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>';
+  var ICON_PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
+  var ICON_SOUND = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM16.5 9a4 4 0 010 6M19 6.5a7.5 7.5 0 010 11"/></svg>';
+  var ICON_MUTED = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM16 9.5l5 5M21 9.5l-5 5"/></svg>';
+
+  // video を包んだ箱（.player）を返す。video は、箱の中へ移る
+  function createPlayer(video) {
+    video.removeAttribute("controls");
+    video.setAttribute("playsinline", "");
+
+    var box = el("div", "player");
+    var stage = el("div", "player-stage");
+    var tap = el("button", "player-tap"); // 動画の上に重ねた透明な面。押すと、再生・停止
+    tap.type = "button";
+    tap.setAttribute("aria-label", "再生・停止");
+    var mark = el("span", "player-play"); // 止まっているあいだ、中央に出す再生の印
+    mark.innerHTML = ICON_PLAY;
+    stage.appendChild(video);
+    stage.appendChild(tap);
+    stage.appendChild(mark);
+
+    var bar = el("div", "player-bar");
+    var toggle = el("button", "round-btn player-btn player-toggle");
+    toggle.type = "button";
+    var seek = el("input", "player-seek");
+    seek.type = "range";
+    seek.min = "0";
+    seek.max = "1000";
+    seek.value = "0";
+    seek.disabled = true; // 読み込みが始まるまで（長さが分かるまで）は、動かせない
+    seek.setAttribute("aria-label", "再生位置");
+    var time = el("span", "player-time");
+    bar.appendChild(toggle);
+    bar.appendChild(seek);
+    bar.appendChild(time);
+
+    var mute = null;
+    if (!video.muted) {
+      mute = el("button", "round-btn player-btn player-mute");
+      mute.type = "button";
+      bar.appendChild(mute);
+    }
+    box.appendChild(stage);
+    box.appendChild(bar);
+
+    var seeking = false;
+    function clock(sec) {
+      sec = Math.max(0, Math.floor(sec || 0));
+      return Math.floor(sec / 60) + ":" + ("0" + (sec % 60)).slice(-2);
+    }
+    function sync() {
+      var playing = !video.paused;
+      mark.hidden = playing;
+      toggle.innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
+      toggle.setAttribute("aria-label", playing ? "停止" : "再生");
+    }
+    function progress() {
+      var dur = video.duration;
+      if (dur && isFinite(dur)) {
+        seek.disabled = false;
+        if (!seeking) seek.value = String(Math.round((video.currentTime / dur) * 1000));
+        time.textContent = clock(video.currentTime) + " / " + clock(dur);
+      } else {
+        time.textContent = "0:00";
+      }
+    }
+    function sound() {
+      if (!mute) return;
+      mute.innerHTML = video.muted ? ICON_MUTED : ICON_SOUND;
+      mute.setAttribute("aria-label", video.muted ? "音を出す" : "消音");
+    }
+    function flip() {
+      // スマホでは、押した操作の中で、直接 play() を呼ばないと再生できない
+      if (video.paused) {
+        var started = video.play();
+        if (started && started.catch) started.catch(function () {});
+      } else {
+        video.pause();
+      }
+    }
+
+    video.addEventListener("play", function () {
+      sync();
+      // 1本を再生したら、ほかの動画は止める
+      Array.prototype.forEach.call(document.querySelectorAll(".player video"), function (other) {
+        if (other !== video && !other.paused) other.pause();
+      });
+    });
+    video.addEventListener("pause", sync);
+    video.addEventListener("ended", sync);
+    video.addEventListener("timeupdate", progress);
+    video.addEventListener("loadedmetadata", progress);
+    video.addEventListener("volumechange", sound);
+    tap.addEventListener("click", flip);
+    toggle.addEventListener("click", flip);
+    if (mute) {
+      mute.addEventListener("click", function () {
+        video.muted = !video.muted;
+      });
+    }
+    seek.addEventListener("input", function () {
+      seeking = true;
+      var dur = video.duration;
+      if (dur && isFinite(dur)) video.currentTime = (seek.value / 1000) * dur;
+    });
+    seek.addEventListener("change", function () {
+      seeking = false;
+    });
+    sync();
+    progress();
+    sound();
+    return box;
+  }
+
+  // ---- 制作秘話・Develop の PV: HTMLの <video controls> を、自前の操作バーに替える（JSが無いときは、標準の操作のまま） ----
+  function initPlayers() {
+    Array.prototype.forEach.call(document.querySelectorAll("main video[controls]"), function (video) {
+      var parent = video.parentNode;
+      var next = video.nextSibling;
+      parent.insertBefore(createPlayer(video), next);
+    });
+  }
+
   // ---- Illust: Gallery の作品を押すと、大きい画像のポップアップ（タイムラプスがある作品は、切り替えられる） ----
   function initGallery() {
     var figures = Array.prototype.slice.call(document.querySelectorAll("#gallery figure"));
@@ -762,11 +893,13 @@
     dialog.appendChild(view);
     dialog.appendChild(title);
     dialog.appendChild(tabs);
+    var making = el("a", "button lightbox-making"); // 制作秘話のページへ（data-making がある作品だけ）
+    making.textContent = "制作秘話";
+    making.hidden = true;
+    dialog.appendChild(making);
     document.body.appendChild(dialog);
 
     var BAR_SPACE = 44; // 動画の下の操作バーの高さ + すきま(px)
-    var ICON_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z"/></svg>';
-    var ICON_PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
     var image = null;
     var videoSrc = "";
     var video = null;
@@ -783,9 +916,8 @@
       stopVideo();
       view.textContent = "";
       if (kind === "video") {
-        // ブラウザ標準の操作は使わない（スマホの Safari は、再生中も半透明の停止ボタンを出し、押すと止まってしまうため）
         video = el("video", "lightbox-media");
-        video.setAttribute("playsinline", "");
+        video.muted = true; // タイムラプスは音声なし（消音ボタンも出さない）
         video.preload = "none"; // 再生ボタンを押すまで、読み込まない
         video.poster = image.src; // 動画の大きさが分かるまで、イラストを表示しておく（大きさも、これで決まる）
         video.src = videoSrc;
@@ -793,83 +925,7 @@
           video.style.width = shown.width + "px";
           video.style.height = Math.max(shown.height - BAR_SPACE, 120) + "px"; // 下の操作バーの分、低くする
         }
-        var current = video;
-        var box = el("div", "lightbox-videobox");
-        var stage = el("div", "lightbox-stage");
-        var tap = el("button", "lightbox-tap"); // 動画の上に重ねた透明な面。押すと、再生・停止
-        tap.type = "button";
-        tap.setAttribute("aria-label", "再生・停止");
-        var mark = el("span", "lightbox-play"); // 止まっているあいだ、中央に出す再生の印
-        mark.innerHTML = ICON_PLAY;
-        stage.appendChild(video);
-        stage.appendChild(tap);
-        stage.appendChild(mark);
-
-        var bar = el("div", "lightbox-bar");
-        var toggle = el("button", "round-btn lightbox-toggle");
-        toggle.type = "button";
-        var seek = el("input", "lightbox-seek");
-        seek.type = "range";
-        seek.min = "0";
-        seek.max = "1000";
-        seek.value = "0";
-        seek.disabled = true; // 読み込みが始まるまで（長さが分かるまで）は、動かせない
-        seek.setAttribute("aria-label", "再生位置");
-        var time = el("span", "lightbox-time");
-        bar.appendChild(toggle);
-        bar.appendChild(seek);
-        bar.appendChild(time);
-        box.appendChild(stage);
-        box.appendChild(bar);
-        view.appendChild(box);
-
-        var clock = function (sec) {
-          sec = Math.max(0, Math.floor(sec || 0));
-          return Math.floor(sec / 60) + ":" + ("0" + (sec % 60)).slice(-2);
-        };
-        var sync = function () {
-          var playing = !current.paused;
-          mark.hidden = playing;
-          toggle.innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
-          toggle.setAttribute("aria-label", playing ? "停止" : "再生");
-        };
-        var progress = function () {
-          var dur = current.duration;
-          if (dur && isFinite(dur)) {
-            seek.disabled = false;
-            if (!seeking) seek.value = String(Math.round((current.currentTime / dur) * 1000));
-            time.textContent = clock(current.currentTime) + " / " + clock(dur);
-          } else {
-            time.textContent = "0:00";
-          }
-        };
-        var seeking = false;
-        var flip = function () {
-          // スマホでは、押した操作の中で、直接 play() を呼ばないと再生できない
-          if (current.paused) {
-            var started = current.play();
-            if (started && started.catch) started.catch(function () {});
-          } else {
-            current.pause();
-          }
-        };
-        current.addEventListener("play", sync);
-        current.addEventListener("pause", sync);
-        current.addEventListener("ended", sync);
-        current.addEventListener("timeupdate", progress);
-        current.addEventListener("loadedmetadata", progress);
-        tap.addEventListener("click", flip);
-        toggle.addEventListener("click", flip);
-        seek.addEventListener("input", function () {
-          seeking = true;
-          var dur = current.duration;
-          if (dur && isFinite(dur)) current.currentTime = (seek.value / 1000) * dur;
-        });
-        seek.addEventListener("change", function () {
-          seeking = false;
-        });
-        sync();
-        progress();
+        view.appendChild(createPlayer(video));
       } else {
         view.appendChild(image);
       }
@@ -885,6 +941,9 @@
       image.alt = thumb ? thumb.alt : "";
       videoSrc = figure.getAttribute("data-video") || "";
       tabs.hidden = !videoSrc;
+      var makingHref = figure.getAttribute("data-making") || "";
+      making.hidden = !makingHref;
+      if (makingHref) making.setAttribute("href", makingHref);
       title.textContent = caption ? caption.textContent.trim() : "";
       show("image");
       document.documentElement.classList.add("is-lightbox"); // 後ろのページを、動かないようにする
@@ -929,6 +988,8 @@
   Array.prototype.forEach.call(document.querySelectorAll(".carousel"), initCarousel);
 
   initGallery();
+
+  initPlayers();
 
   var viewer = document.querySelector(".novel-viewer");
   if (viewer) initNovels(viewer);
