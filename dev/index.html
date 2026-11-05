@@ -28,9 +28,10 @@
 
     <!-- 役割（<dt>役割</dt><dd>…</dd>）は、チームで開発したものだけに、使用技術の前に足す。個人で作ったものには付けない。
          「公開ページ」は、公開しているものだけに付ける（公開していなければ、行ごと書かない）。「GitHub」は、リポジトリを公開しているものだけに付ける。
-         左のスクリーンショットは、Illust の Pick Up と同じスライダー。1枚だけのときは、操作のボタン（.carousel-controls）を付けない -->
+         左のスクリーンショットは、Illust の Pick Up と同じスライダー。1枚だけのときは、操作のボタン（.carousel-controls）を付けない。
+         PV（プロモーションビデオ）は、今後足す作品には基本付ける（叶奏の備忘録には付けない）。.dev-item の先頭に <div class="dev-pv"><video src="../videos/dev/名前-pv.mp4" poster="../images/dev/名前-pv.webp" width="1280" height="720" preload="none" playsinline controls></video></div> を足す（音声が無ければ muted も）。手順は .claude/skills/develop-pv/SKILL.md -->
     <div class="dev-list">
-      <article class="dev-item">
+      <article class="dev-item" id="homepage">
         <div class="dev-shot">
           <div class="carousel" aria-label="叶奏の備忘録のスクリーンショット">
             <div class="carousel-track" tabindex="0">
@@ -60,6 +61,9 @@
             <dt>公開ページ</dt><dd><a href="https://kanakana1118.github.io/">https://kanakana1118.github.io/</a></dd>
             <dt>GitHub</dt><dd><a href="https://github.com/kanakana1118/kanakana1118.github.io" target="_blank" rel="noopener">kanakana1118/kanakana1118.github.io</a></dd>
           </dl>
+          <div class="buttons">
+            <a class="button" href="homepage.html">制作秘話</a>
+          </div>
         </div>
       </article>
 
